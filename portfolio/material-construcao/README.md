@@ -4,7 +4,6 @@ Página estática, sem build e sem dependências (só Google Fonts). Abra `index
 
 - `catalogo.html`: fonte da página (sem `<html>/<head>`), usada na publicação como Artifact.
 - `index.html`: mesma página embrulhada em documento completo, pronta para hospedar.
-- `estudo.html`: estudo de cor (60-30-10, harmonia, contraste WCAG), leitura em Z e funil, para apresentar ao lojista.
 
 ## Personalizar para uma loja
 
