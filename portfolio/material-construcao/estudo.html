@@ -1,0 +1,299 @@
+<title>Estudo Depósito Alicerce</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: relatório de uma coluna, blocos numerados só onde há sequência (ordem do olhar e do funil) */
+:root {
+  color-scheme: light;
+  --navy: #0b2239; --navy7: #163a5f; --navy1: #e6edf4;
+  --orange: #c2410c; --orange-hi: #f26a1b; --yellow: #ffd23f; --wa: #0e7a3e;
+  --bg: #f4f6f8; --surface: #fff; --ink: #0b2239; --muted: #4a5561; --line: #dce2e8;
+  --f-d: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --f-b: "Barlow", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-b); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.num { font-variant-numeric: tabular-nums; }
+header { background: var(--navy); color: #fff; }
+header .wrap { padding-block: 48px 40px; }
+.k { font-size: 12.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); }
+header .k { color: var(--yellow); }
+header h1 { font-family: var(--f-d); font-weight: 800; font-size: clamp(38px, 6vw, 64px); text-transform: uppercase; line-height: .95; margin-top: 10px; }
+header p { color: #c9d6e3; max-width: 62ch; margin-top: 14px; font-size: 17px; }
+.summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: rgba(255,255,255,.14); margin-top: 28px; border-radius: 8px; overflow: hidden; }
+.summary div { background: var(--navy7); padding: 16px 18px; }
+.summary b { display: block; font-family: var(--f-d); font-size: 22px; text-transform: uppercase; color: var(--yellow); }
+.summary span { font-size: 14px; color: #dbe5ef; }
+section { padding-block: 44px 0; }
+section > h2 { font-family: var(--f-d); font-weight: 800; font-size: clamp(28px, 4vw, 38px); text-transform: uppercase; line-height: 1; margin-top: 6px; }
+section > p.lead { color: var(--muted); max-width: 66ch; margin-top: 10px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 24px; margin-top: 20px; }
+
+.swatches { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.sw .chip { aspect-ratio: 1; border-radius: 8px; border: 1px solid rgba(0,0,0,.08); display: flex; align-items: flex-end; padding: 8px; font-weight: 700; font-size: 12px; }
+.sw b { display: block; font-size: 14px; margin-top: 8px; }
+.sw span { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.35; }
+.ratio { display: flex; height: 44px; border-radius: 8px; overflow: hidden; margin-top: 22px; font-size: 13px; font-weight: 700; }
+.ratio div { display: flex; align-items: center; padding: 0 12px; white-space: nowrap; overflow: hidden; }
+.ratio-legend { display: grid; grid-template-columns: 6fr 3fr 1fr; font-size: 13px; color: var(--muted); margin-top: 8px; gap: 8px; }
+
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: center; }
+.wheel svg { width: 100%; max-width: 340px; height: auto; display: block; margin: 0 auto; }
+ul.facts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+ul.facts li { padding-left: 16px; border-left: 3px solid var(--line); }
+ul.facts b { display: block; }
+ul.facts span { color: var(--muted); font-size: 15px; }
+
+.tbl { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 560px; }
+th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }
+td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.pair { display: inline-flex; align-items: center; justify-content: center; min-width: 110px; padding: 6px 10px; border-radius: 4px; font-weight: 700; font-size: 13.5px; }
+.pass { color: var(--wa); font-weight: 700; }
+.warn { color: var(--orange); font-weight: 700; }
+
+.zmap svg { width: 100%; height: auto; display: block; }
+.order { counter-reset: o; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; }
+.order li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.order li:last-child { border-bottom: 0; }
+.order .n { font-family: var(--f-d); font-weight: 800; font-size: 30px; color: var(--orange-hi); line-height: 1; }
+.order b { display: block; }
+.order span { color: var(--muted); font-size: 15px; }
+
+.levers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.lever { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
+.lever .tag { display: inline-block; font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; background: var(--navy1); color: var(--navy7); padding: 2px 7px; border-radius: 3px; }
+.lever b { display: block; font-size: 17px; margin-top: 8px; }
+.lever p { color: var(--muted); font-size: 15px; margin-top: 4px; }
+
+.type { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.type .s1 { font-family: var(--f-d); font-weight: 800; font-size: 54px; line-height: .95; text-transform: uppercase; }
+.type .s2 { font-family: var(--f-b); font-size: 18px; }
+.type small { display: block; color: var(--muted); font-size: 13.5px; margin-top: 8px; }
+
+.vs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.vs div { border-radius: 8px; padding: 18px; }
+.vs .a { background: var(--surface); border: 1px solid var(--line); }
+.vs .b { background: var(--navy); color: #fff; }
+.vs h3 { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
+.vs .b h3 { color: var(--yellow); }
+.vs ul { margin: 10px 0 0; padding-left: 18px; font-size: 15px; display: flex; flex-direction: column; gap: 6px; }
+.vs .a ul { color: var(--muted); }
+footer { padding-block: 44px 56px; color: var(--muted); font-size: 13.5px; }
+
+@media (max-width: 760px) {
+  .summary, .two, .levers, .type, .vs { grid-template-columns: minmax(0, 1fr); }
+  .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .panel { padding: 18px; }
+  .ratio div span.long { display: none; }
+}
+</style>
+
+<header>
+  <div class="wrap">
+    <span class="k">Estudo de marca e conversão</span>
+    <h1>Depósito Alicerce:<br>cor, hierarquia e funil</h1>
+    <p>Por que o catálogo tem esta cara. Cada decisão de cor e de posição existe para levar o visitante a um único gesto: mandar o orçamento pelo WhatsApp.</p>
+    <div class="summary">
+      <div><b>Confiança</b><span>Azul obra estrutura a página e carrega o texto</span></div>
+      <div><b>Ação</b><span>Laranja só em botões que vendem</span></div>
+      <div><b>Preço</b><span>Amarelo só em etiqueta e desconto</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <span class="k">Paleta</span>
+    <h2>Cada cor tem um único trabalho</h2>
+    <p class="lead">Em varejo, cor que aparece em todo lugar deixa de sinalizar. Por isso cada cor de destaque ficou presa a uma função. Quando o cliente vê laranja, sabe que é botão. Quando vê amarelo, sabe que é preço.</p>
+    <div class="panel">
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#0b2239;color:#fff">#0B2239</div><b>Azul obra</b><span>Header, rodapé, texto. Confiança e solidez.</span></div>
+        <div class="sw"><div class="chip" style="background:#163a5f;color:#fff">#163A5F</div><b>Azul 700</b><span>Faixa de benefícios, links.</span></div>
+        <div class="sw"><div class="chip" style="background:#c2410c;color:#fff">#C2410C</div><b>Laranja ação</b><span>Somente botões de compra.</span></div>
+        <div class="sw"><div class="chip" style="background:#ffd23f;color:#0b2239">#FFD23F</div><b>Amarelo oferta</b><span>Etiqueta de preço, % off.</span></div>
+        <div class="sw"><div class="chip" style="background:#0e7a3e;color:#fff">#0E7A3E</div><b>Verde Pix/Zap</b><span>Preço no Pix e WhatsApp.</span></div>
+        <div class="sw"><div class="chip" style="background:#f4f6f8;color:#0b2239">#F4F6F8</div><b>Concreto claro</b><span>Fundo, neutro com viés azul.</span></div>
+      </div>
+      <div class="ratio" aria-label="Proporção 60-30-10">
+        <div style="flex:6;background:#f4f6f8;color:#0b2239;border:1px solid var(--line);border-right:0;border-radius:8px 0 0 8px">60% <span class="long">&nbsp;neutros (fundo, cards)</span></div>
+        <div style="flex:3;background:#0b2239;color:#fff">30% <span class="long">&nbsp;azul obra</span></div>
+        <div style="flex:.7;background:#c2410c;color:#fff;padding:0 6px">7%</div>
+        <div style="flex:.3;background:#ffd23f;padding:0"></div>
+      </div>
+      <div class="ratio-legend"><span>Neutros: o produto aparece</span><span>Azul: estrutura e confiança</span><span>Laranja + amarelo</span></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="k">Harmonia</span>
+    <h2>Complementar com acento análogo</h2>
+    <div class="panel two">
+      <div class="wheel">
+        <svg viewBox="0 0 340 340" role="img" aria-label="Círculo cromático com azul em 210 graus, laranja em 17 a 22 graus e amarelo em 46 graus">
+          <defs>
+            <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#e6edf4"/><stop offset="1" stop-color="#e6edf4"/></linearGradient>
+          </defs>
+          <g id="ring"></g>
+          <circle cx="170" cy="170" r="92" fill="#fff"/>
+          <line x1="170" y1="170" x2="85" y2="317" stroke="#0b2239" stroke-width="2" stroke-dasharray="4 4"/>
+          <line x1="170" y1="170" x2="250" y2="35" stroke="#0b2239" stroke-width="2" stroke-dasharray="4 4"/>
+          <circle cx="250" cy="35" r="14" fill="#c2410c" stroke="#fff" stroke-width="3"/>
+          <circle cx="292" cy="80" r="14" fill="#ffd23f" stroke="#fff" stroke-width="3"/>
+          <circle cx="85" cy="317" r="14" fill="#0b2239" stroke="#fff" stroke-width="3"/>
+          <text x="170" y="160" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="30" fill="#0b2239">~190°</text>
+          <text x="170" y="184" text-anchor="middle" font-family="Barlow, sans-serif" font-size="13" fill="#4a5561">azul ↔ laranja</text>
+        </svg>
+      </div>
+      <ul class="facts">
+        <li><b>Azul 210° × laranja 17–22°</b><span>Quase opostos no círculo (≈190°). Contraste de matiz máximo: o botão laranja salta de qualquer área azul sem precisar ser grande.</span></li>
+        <li><b>Amarelo 46°: vizinho do laranja</b><span>Fica no mesmo lado quente do círculo, então soma energia ao laranja sem brigar com ele. É a etiqueta amarela que o cliente de material de construção já associa a preço baixo.</span></li>
+        <li><b>Neutros tingidos de azul</b><span>O cinza de fundo usa o mesmo matiz 210° do azul, com saturação baixa. A página parece uma peça só, e não um template.</span></li>
+        <li><b>Verde restrito</b><span>Verde aparece só onde o cliente já espera: WhatsApp e preço no Pix. Assim o verde sinaliza "pagar menos" e "falar agora".</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <span class="k">Legibilidade</span>
+    <h2>Contraste medido (WCAG 2.1)</h2>
+    <p class="lead">O laranja vivo (#F26A1B) com texto branco dá 3,6:1 e reprova em texto pequeno. Por isso os botões usam o laranja queimado (#C2410C), e o laranja vivo fica só em ícones e detalhes.</p>
+    <div class="panel tbl">
+      <table>
+        <thead><tr><th>Combinação</th><th>Uso</th><th>Contraste</th><th>Nível</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pair" style="background:#0b2239;color:#fff">Branco / azul</span></td><td>Header, rodapé, kits</td><td class="num">16,1 : 1</td><td class="pass">AAA</td></tr>
+          <tr><td><span class="pair" style="background:#ffd23f;color:#0b2239">Azul / amarelo</span></td><td>Etiqueta de preço, % off</td><td class="num">11,2 : 1</td><td class="pass">AAA</td></tr>
+          <tr><td><span class="pair" style="background:#f4f6f8;color:#4a5561;border:1px solid #dce2e8">Cinza texto / fundo</span></td><td>Textos de apoio</td><td class="num">5,4 : 1</td><td class="pass">AA</td></tr>
+          <tr><td><span class="pair" style="background:#0e7a3e;color:#fff">Branco / verde</span></td><td>Botão WhatsApp</td><td class="num">5,4 : 1</td><td class="pass">AA</td></tr>
+          <tr><td><span class="pair" style="background:#c2410c;color:#fff">Branco / laranja</span></td><td>Botões de compra</td><td class="num">5,2 : 1</td><td class="pass">AA</td></tr>
+          <tr><td><span class="pair" style="background:#f26a1b;color:#fff">Branco / laranja vivo</span></td><td>Descartado para texto</td><td class="num">3,6 : 1</td><td class="warn">Só ícone</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <span class="k">Posições</span>
+    <h2>Leitura em Z no primeiro scroll</h2>
+    <p class="lead">Em telas de catálogo o olho percorre um Z: canto superior esquerdo, linha do topo, diagonal e base. Cada parada recebeu o elemento que mais pesa na decisão naquele instante.</p>
+    <div class="panel two">
+      <div class="zmap">
+        <svg viewBox="0 0 400 270" role="img" aria-label="Wireframe da primeira dobra com o caminho do olhar em Z">
+          <rect width="400" height="270" rx="8" fill="#f4f6f8"/>
+          <rect x="0" y="0" width="400" height="14" fill="#0b2239"/>
+          <rect x="8" y="4" width="120" height="6" rx="2" fill="#ffd23f"/>
+          <rect x="0" y="14" width="400" height="30" fill="#fff"/>
+          <rect x="10" y="22" width="56" height="14" rx="3" fill="#0b2239"/>
+          <rect x="100" y="22" width="180" height="14" rx="3" fill="#fff" stroke="#0b2239" stroke-width="2"/>
+          <rect x="320" y="22" width="70" height="14" rx="3" fill="#c2410c"/>
+          <rect x="0" y="44" width="400" height="12" fill="#fff" stroke="#dce2e8"/>
+          <rect x="20" y="70" width="150" height="16" rx="2" fill="#0b2239"/>
+          <rect x="20" y="90" width="120" height="16" rx="2" fill="#0b2239"/>
+          <rect x="20" y="110" width="70" height="16" rx="2" fill="#ffd23f"/><rect x="94" y="110" width="70" height="16" rx="2" fill="#c2410c"/>
+          <rect x="20" y="136" width="160" height="6" rx="2" fill="#9aa5ae"/><rect x="20" y="146" width="140" height="6" rx="2" fill="#9aa5ae"/>
+          <rect x="20" y="162" width="80" height="18" rx="3" fill="#c2410c"/><rect x="106" y="162" width="70" height="18" rx="3" fill="#fff" stroke="#0b2239" stroke-width="2"/>
+          <rect x="20" y="192" width="170" height="10" rx="2" fill="#dce2e8"/>
+          <rect x="230" y="56" width="170" height="160" fill="#0b2239"/>
+          <rect x="270" y="80" width="100" height="70" rx="4" fill="#4b6580"/>
+          <polygon points="246,170 330,166 334,206 250,210 240,190" fill="#ffd23f"/>
+          <rect x="0" y="216" width="400" height="28" fill="#163a5f"/>
+          <rect x="0" y="250" width="400" height="20" fill="#fff" stroke="#dce2e8"/>
+          <rect x="330" y="253" width="60" height="14" rx="3" fill="#0e7a3e"/>
+          <path d="M30 30 L350 30 L60 120 L300 190" fill="none" stroke="#f26a1b" stroke-width="3" stroke-dasharray="6 5" stroke-linecap="round"/>
+          <g font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="14" fill="#fff">
+            <circle cx="30" cy="30" r="10" fill="#f26a1b"/><text x="30" y="35" text-anchor="middle">1</text>
+            <circle cx="350" cy="30" r="10" fill="#f26a1b"/><text x="350" y="35" text-anchor="middle">2</text>
+            <circle cx="60" cy="120" r="10" fill="#f26a1b"/><text x="60" y="125" text-anchor="middle">3</text>
+            <circle cx="300" cy="190" r="10" fill="#f26a1b"/><text x="300" y="195" text-anchor="middle">4</text>
+          </g>
+        </svg>
+      </div>
+      <ol class="order">
+        <li><span class="n">1</span><div><b>Marca + frete grátis</b><span>A primeira linha lida é a promessa de frete, a maior objeção de quem compra material pesado.</span></div></li>
+        <li><span class="n">2</span><div><b>Busca + botão de orçamento</b><span>Busca centralizada e larga (quem chega sabe o que quer), e o contador do orçamento sempre à vista.</span></div></li>
+        <li><span class="n">3</span><div><b>Promessa + CTA</b><span>Título sobre o medo real do cliente (obra parada). O amarelo marca a promessa, e o botão laranja fica logo abaixo do texto.</span></div></li>
+        <li><span class="n">4</span><div><b>Etiqueta da oferta</b><span>O Z termina no preço: etiqueta amarela inclinada, com valor do Pix grande e preço anterior riscado.</span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <span class="k">Funil</span>
+    <h2>Ordem das seções</h2>
+    <p class="lead">A página desce do impulso para a decisão. Ofertas e kits vêm antes do catálogo porque elevam o ticket enquanto a atenção ainda está alta. A prova social vem perto do fechamento, quando surge a dúvida "posso confiar?".</p>
+    <div class="panel">
+      <ol class="order">
+        <li><span class="n">1</span><div><b>Barra de benefícios</b><span>Responde de cara as quatro objeções: prazo, preço, pagamento e sobra de material.</span></div></li>
+        <li><span class="n">2</span><div><b>Ofertas da semana com contagem regressiva</b><span>Escassez com prazo real (sábado 13h) e preço anterior riscado como âncora.</span></div></li>
+        <li><span class="n">3</span><div><b>Kits por etapa da obra</b><span>Junta 3 a 4 itens num clique. Sobe o ticket médio e tira do cliente o trabalho de calcular.</span></div></li>
+        <li><span class="n">4</span><div><b>Catálogo com filtro lateral</b><span>Ordenado por mais vendidos. Na busca sem resultado, o vazio vira um botão de WhatsApp.</span></div></li>
+        <li><span class="n">5</span><div><b>Calculadora de obra</b><span>Ferramenta útil gera autoridade, e o resultado entra direto no orçamento.</span></div></li>
+        <li><span class="n">6</span><div><b>Canal profissional</b><span>Pedreiro e construtora compram toda semana. Uma faixa própria, com listras de sinalização, fala direto com eles.</span></div></li>
+        <li><span class="n">7</span><div><b>Avaliações, área de entrega, dúvidas</b><span>Prova social e tabela de frete matam as perguntas mais repetidas no WhatsApp.</span></div></li>
+        <li><span class="n">8</span><div><b>Fechamento laranja</b><span>A única faixa inteira de laranja da página, reservada para o último convite: enviar a lista.</span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <span class="k">Gatilhos aplicados</span>
+    <h2>Mecanismos de conversão</h2>
+    <div class="levers" style="margin-top:20px">
+      <div class="lever"><span class="tag">Ancoragem</span><b>Preço do Pix em destaque</b><p>O número grande é o menor (Pix 5% off). Cartão e parcelamento ficam abaixo, menores.</p></div>
+      <div class="lever"><span class="tag">Progresso</span><b>Barra de frete grátis</b><p>"Faltam R$ X para frete grátis" no orçamento incentiva o cliente a completar o pedido.</p></div>
+      <div class="lever"><span class="tag">Pacote</span><b>Desconto de kit automático</b><p>Se o orçamento tiver todos os itens de um kit, o desconto entra sozinho, mesmo comprando avulso.</p></div>
+      <div class="lever"><span class="tag">Fricção zero</span><b>Mensagem pronta no WhatsApp</b><p>Lista, totais, nome e bairro já formatados. O vendedor responde sem precisar perguntar nada.</p></div>
+      <div class="lever"><span class="tag">Escassez</span><b>Contagem regressiva real</b><p>Calculada até o próximo sábado 13h, que é o fechamento da loja. Não reinicia ao recarregar.</p></div>
+      <div class="lever"><span class="tag">Presença</span><b>Barra fixa de orçamento</b><p>Total sempre visível no rodapé. Vazio, o espaço vira um atalho para o WhatsApp.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="k">Tipografia</span>
+    <h2>Letra de placa, texto de balcão</h2>
+    <div class="panel type">
+      <div><div class="s1">R$ 36,01</div><small>Barlow Condensed 800. Condensada como placa de obra e letreiro de depósito. Cabe preço grande em card estreito de celular.</small></div>
+      <div><div class="s2">Cimento CP II-F-32 · saco 50 kg<br>Uso geral · NBR 16697</div><small>Barlow, da mesma família. Leitura clara de especificação técnica, com coerência total com os títulos.</small></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="k">Antes e depois</span>
+    <h2>O que mudou da versão 1</h2>
+    <div class="vs" style="margin-top:20px">
+      <div class="a"><h3>Versão 1</h3><ul><li>Catálogo funcional, sem narrativa de venda</li><li>Laranja usado em tudo, sem hierarquia</li><li>Preço único, sem âncora nem Pix</li><li>Sem prova social, frete ou público profissional</li></ul></div>
+      <div class="b"><h3>Versão 2</h3><ul><li>Funil em 8 etapas com Z na primeira dobra</li><li>Regra 60-30-10 com papel fixo para cada cor</li><li>Pix em destaque, preço anterior riscado, parcelamento</li><li>Kits, calculadora em 4 modos, frete por zona, canal profissional</li></ul></div>
+    </div>
+  </section>
+</main>
+<footer class="wrap">Estudo de apoio ao catálogo demonstrativo Depósito Alicerce. Loja fictícia; números de prova social são exemplos ilustrativos.</footer>
+
+<script>
+(function () {
+  const g = document.getElementById("ring"), cx = 170, cy = 170, R = 150, r = 100;
+  let out = "";
+  for (let i = 0; i < 36; i++) {
+    const a0 = (i * 10 - 90) * Math.PI / 180, a1 = ((i + 1) * 10 - 90) * Math.PI / 180;
+    const p = (rad, a) => `${(cx + rad * Math.cos(a)).toFixed(1)} ${(cy + rad * Math.sin(a)).toFixed(1)}`;
+    out += `<path d="M${p(r, a0)} L${p(R, a0)} A${R} ${R} 0 0 1 ${p(R, a1)} L${p(r, a1)} A${r} ${r} 0 0 0 ${p(r, a0)}Z" fill="hsl(${i * 10 + 5} 70% 55%)"/>`;
+  }
+  g.innerHTML = out;
+  // posiciona os marcadores pelo matiz real
+  const place = (sel, hue) => {
+    const a = (hue - 90) * Math.PI / 180, el = document.querySelectorAll("svg circle[r='14']")[sel];
+    el.setAttribute("cx", (cx + 125 * Math.cos(a)).toFixed(1)); el.setAttribute("cy", (cy + 125 * Math.sin(a)).toFixed(1));
+    return [cx + 125 * Math.cos(a), cy + 125 * Math.sin(a)];
+  };
+  const o = place(0, 17), y = place(1, 46), n = place(2, 210);
+  const lines = document.querySelectorAll(".wheel line");
+  lines[0].setAttribute("x2", n[0].toFixed(1)); lines[0].setAttribute("y2", n[1].toFixed(1));
+  lines[1].setAttribute("x2", o[0].toFixed(1)); lines[1].setAttribute("y2", o[1].toFixed(1));
+})();
+</script>

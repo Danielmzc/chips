@@ -10,421 +10,779 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: faixa "planta baixa" no topo, filtros por setor da loja, grade de produtos e orçamento em gaveta inferior */
+/* Layout: leitura em Z no topo (promessa > busca > oferta), depois funil: ofertas > kits > catálogo > ferramentas > prova > fechamento.
+   Cor 60-30-10: 60% neutros frios, 30% azul obra (estrutura e confiança), 10% laranja (ação) + amarelo (só preço/oferta).
+   Tema único claro, escolhido de propósito: varejo de construção trabalha com etiqueta amarela sobre fundo claro. */
 :root {
-  --bg: #eef0f0;
+  color-scheme: light;
+  --navy-900: #0b2239;  /* estrutura, texto principal */
+  --navy-700: #163a5f;
+  --navy-500: #2f5d8a;
+  --navy-100: #e6edf4;
+  --orange: #c2410c;    /* CTA: 5,18:1 com branco */
+  --orange-hi: #f26a1b; /* ícones e detalhes, nunca texto */
+  --orange-50: #fff3eb;
+  --yellow: #ffd23f;    /* etiqueta de preço: 11,17:1 com navy */
+  --wa: #0e7a3e;        /* WhatsApp: 5,42:1 com branco */
+  --bg: #f4f6f8;
   --surface: #ffffff;
-  --tile: #e1e6e6;
-  --ink: #1b2225;
-  --muted: #59666b;
-  --line: #d3d9da;
-  --accent: #d9530c;
-  --accent-ink: #ffffff;
-  --accent-soft: #fbe3d4;
-  --deep: #17384a;
-  --deep-ink: #e9f1f4;
-  --grid: rgba(233, 241, 244, .08);
-  --ok: #1f7a4d;
+  --tile: #eaeff3;
+  --ink: #0b2239;
+  --muted: #4a5561;     /* 7,6:1 */
+  --line: #dce2e8;
 
-  --f-display: "Archivo", "Arial Narrow", Arial, sans-serif;
-  --f-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
-  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #111517; --surface: #1a2023; --tile: #232b2f; --ink: #e7ecec; --muted: #98a5a9;
-    --line: #2d363a; --accent: #ff7a33; --accent-ink: #1a0d05; --accent-soft: #3a2116;
-    --deep: #0e2633; --deep-ink: #dbe8ee; --grid: rgba(219, 232, 238, .06); --ok: #4cc28a;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #111517; --surface: #1a2023; --tile: #232b2f; --ink: #e7ecec; --muted: #98a5a9;
-  --line: #2d363a; --accent: #ff7a33; --accent-ink: #1a0d05; --accent-soft: #3a2116;
-  --deep: #0e2633; --deep-ink: #dbe8ee; --grid: rgba(219, 232, 238, .06); --ok: #4cc28a;
-  color-scheme: dark;
+  --f-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --f-body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --gl: max(16px, env(safe-area-inset-left, 0px));
+  --gr: max(16px, env(safe-area-inset-right, 0px));
+  --r: 6px;
 }
 
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 130px; }
 body {
-  background: var(--bg); color: var(--ink);
-  font-family: var(--f-body); font-size: 15px; line-height: 1.5;
-  padding-bottom: 88px;
+  background: var(--bg); color: var(--ink); font-family: var(--f-body);
+  font-size: 16px; line-height: 1.5; padding-bottom: 76px;
 }
 body::before {
   content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
-  z-index: 30; background: var(--surface);
+  z-index: 60; background: var(--navy-900);
 }
-.wrap { max-width: 1180px; margin: 0 auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
-h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: var(--gl); padding-right: var(--gr); }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
 button, input, select { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--orange-hi); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+svg.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-/* Header */
-.top {
-  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
-  background: var(--surface); border-bottom: 1px solid var(--line);
-}
-.top .wrap { display: flex; align-items: center; gap: 16px; padding-block: 12px; }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); min-width: 0; }
-.brand-mark { width: 36px; height: 36px; flex: none; }
-.brand-name {
-  font-family: var(--f-display); font-weight: 850; font-stretch: 112%;
-  font-size: 18px; letter-spacing: .02em; text-transform: uppercase; line-height: 1;
-}
-.brand-name small {
-  display: block; font-family: var(--f-mono); font-weight: 400; font-stretch: 100%;
-  font-size: 10.5px; letter-spacing: .08em; color: var(--muted); margin-top: 4px;
-}
-.search { flex: 1; display: flex; justify-content: flex-end; min-width: 0; }
-.search input {
-  width: 100%; max-width: 340px; padding: 9px 12px 9px 36px;
-  border: 1px solid var(--line); border-radius: 6px; background: var(--bg);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%237d898d' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: 11px center;
-}
-.search input::placeholder { color: var(--muted); }
-
-/* Hero */
-.hero {
-  background-color: var(--deep); color: var(--deep-ink);
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-.hero .wrap {
-  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  gap: 32px; padding-block: 40px 36px; align-items: center;
-}
-.eyebrow {
-  font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
-  opacity: .75; margin: 0 0 12px;
-}
-.hero h1 {
-  font-weight: 900; font-stretch: 120%; text-transform: uppercase;
-  font-size: clamp(30px, 5.2vw, 56px); line-height: .98; letter-spacing: -.005em;
-}
-.hero h1 em { font-style: normal; color: var(--accent); }
-.hero p.lead { max-width: 52ch; margin: 16px 0 0; font-size: 16px; opacity: .88; }
-.perks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; padding: 0; list-style: none; }
-.perks li {
-  display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600;
-  border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 6px 12px 6px 10px;
-}
-.perks svg { width: 16px; height: 16px; flex: none; }
-
-.deal {
-  background: var(--surface); color: var(--ink); border-radius: 10px;
-  display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 16px; align-items: center;
-  padding: 16px; box-shadow: 0 18px 40px -20px rgba(0,0,0,.55);
-}
-.deal .art { background: var(--tile); border-radius: 8px; aspect-ratio: 4/3; max-width: 100%; }
-.deal .tag {
-  display: inline-block; font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em;
-  text-transform: uppercase; background: var(--accent); color: var(--accent-ink);
-  padding: 3px 7px; border-radius: 3px;
-}
-.deal h2 { font-size: 18px; font-weight: 800; font-stretch: 105%; margin-top: 8px; line-height: 1.2; }
-.deal .was { color: var(--muted); text-decoration: line-through; font-size: 13px; margin-top: 6px; }
-.deal .now { font-family: var(--f-display); font-weight: 900; font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; }
-.deal .now small { font-family: var(--f-body); font-weight: 500; font-size: 12px; color: var(--muted); }
-.deal button { margin-top: 10px; }
-
-/* Filters */
-.bar { padding-block: 22px 6px; }
-.bar-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.bar h2 { font-size: 22px; font-weight: 850; font-stretch: 110%; text-transform: uppercase; }
-.count { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); }
-.chips {
-  display: flex; gap: 8px; margin-top: 14px; overflow-x: auto; padding-bottom: 6px;
-  scrollbar-width: thin;
-}
-.chip {
-  flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
-  padding: 7px 14px; font-size: 13.5px; font-weight: 600; cursor: pointer; white-space: nowrap;
-}
-.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.chip .n { font-family: var(--f-mono); font-weight: 400; font-size: 11.5px; opacity: .6; margin-left: 6px; }
-
-/* Grid */
-.grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px; padding-block: 12px 28px;
-}
-.card {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
-  display: flex; flex-direction: column; overflow: hidden; min-width: 0;
-}
-.card .art { position: relative; background: var(--tile); aspect-ratio: 4/3; max-width: 100%; }
-.art svg { display: block; width: 100%; height: 100%; }
-.badge {
-  position: absolute; top: 10px; left: 10px; font-family: var(--f-mono); font-size: 10.5px;
-  letter-spacing: .06em; text-transform: uppercase; background: var(--surface); color: var(--ink);
-  border: 1px solid var(--line); padding: 2px 7px; border-radius: 3px;
-}
-.card .body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.sku { font-family: var(--f-mono); font-size: 11px; color: var(--muted); letter-spacing: .02em; }
-.card h3 { font-family: var(--f-body); font-size: 15px; font-weight: 700; line-height: 1.3; }
-.spec { font-size: 13px; color: var(--muted); }
-.buy { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; }
-.price { font-family: var(--f-display); font-weight: 850; font-size: 21px; line-height: 1; font-variant-numeric: tabular-nums; }
-.price small { display: block; font-family: var(--f-body); font-weight: 500; font-size: 11.5px; color: var(--muted); margin-top: 4px; }
-
+/* ---------- Botões ---------- */
 .btn {
-  border: 0; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 13.5px;
-  padding: 8px 12px; background: var(--accent); color: var(--accent-ink); white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 0; border-radius: var(--r); cursor: pointer; text-decoration: none;
+  font-weight: 700; font-size: 15px; padding: 12px 20px; white-space: nowrap;
+  background: var(--orange); color: #fff; transition: background .15s, transform .15s;
 }
-.btn:hover { filter: brightness(1.07); }
-.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
-.stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.stepper button { width: 32px; height: 34px; border: 0; background: var(--bg); cursor: pointer; font-size: 17px; font-weight: 600; }
-.stepper input {
-  width: 46px; height: 34px; border: 0; text-align: center; background: var(--surface);
-  font-variant-numeric: tabular-nums; font-weight: 600; -moz-appearance: textfield;
+.btn:hover { background: #a8380a; }
+.btn:active { transform: translateY(1px); }
+.btn.lg { font-size: 17px; padding: 15px 26px; }
+.btn.sm { font-size: 14px; padding: 9px 14px; }
+.btn.outline { background: transparent; color: var(--navy-900); box-shadow: inset 0 0 0 2px var(--navy-900); }
+.btn.outline:hover { background: var(--navy-900); color: #fff; }
+.btn.wa { background: var(--wa); }
+.btn.wa:hover { background: #0b6332; }
+.btn.light { background: #fff; color: var(--navy-900); }
+.btn.light:hover { background: var(--yellow); }
+.btn.block { width: 100%; }
+
+/* ---------- Barra de utilidade ---------- */
+.util { background: var(--navy-900); color: #c9d6e3; font-size: 13.5px; }
+.util .wrap { display: flex; justify-content: space-between; gap: 16px; padding-block: 8px; }
+.util b { color: var(--yellow); font-weight: 700; }
+.util .r { display: flex; gap: 20px; }
+.util .r span { display: inline-flex; align-items: center; gap: 6px; }
+.util svg.i { width: 16px; height: 16px; }
+
+/* ---------- Header ---------- */
+.head {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
+  background: var(--surface); box-shadow: 0 1px 0 var(--line);
 }
+.head .bar1 { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 24px; align-items: center; padding-block: 14px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo svg { width: 44px; height: 44px; flex: none; }
+.logo b { display: block; font-family: var(--f-display); font-weight: 800; font-size: 25px; line-height: .9; letter-spacing: .01em; text-transform: uppercase; }
+.logo small { display: block; font-size: 11px; font-weight: 600; letter-spacing: .14em; color: var(--muted); margin-top: 3px; }
+.search { display: flex; border: 2px solid var(--navy-900); border-radius: var(--r); overflow: hidden; background: #fff; max-width: 620px; width: 100%; justify-self: center; }
+.search select { border: 0; background: var(--navy-100); padding: 0 10px; font-size: 14px; font-weight: 600; max-width: 170px; }
+.search input { flex: 1; min-width: 0; border: 0; padding: 11px 14px; font-size: 15px; outline: none; }
+.search button { border: 0; background: var(--navy-900); color: #fff; padding: 0 18px; cursor: pointer; display: flex; align-items: center; }
+.head-actions { display: flex; gap: 10px; align-items: center; }
+.quote-btn { position: relative; }
+.quote-btn .n {
+  position: absolute; top: -7px; right: -7px; min-width: 22px; height: 22px; padding: 0 6px;
+  border-radius: 11px; background: var(--yellow); color: var(--navy-900); font-size: 12px; font-weight: 800;
+  display: grid; place-items: center; box-shadow: 0 0 0 2px #fff;
+}
+.pro-link { font-size: 14px; font-weight: 600; text-decoration: none; color: var(--navy-700); padding: 8px 4px; }
+.pro-link:hover { text-decoration: underline; }
+.cats { border-top: 1px solid var(--line); }
+.cats .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.cats .wrap::-webkit-scrollbar { display: none; }
+.cats button {
+  flex: none; display: flex; align-items: center; gap: 8px; border: 0; background: none; cursor: pointer;
+  padding: 11px 12px; font-size: 14.5px; font-weight: 600; color: var(--navy-700);
+  border-bottom: 3px solid transparent;
+}
+.cats button:hover { color: var(--orange); border-bottom-color: var(--orange-hi); }
+.cats button svg.i { color: var(--orange-hi); }
+
+/* ---------- Hero ---------- */
+.hero { background: var(--surface); border-bottom: 1px solid var(--line); overflow: hidden; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px; align-items: stretch; }
+.hero-copy { padding-block: 56px 48px; display: flex; flex-direction: column; justify-content: center; }
+.kicker { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--orange); }
+.kicker::before { content: ""; width: 22px; height: 3px; background: var(--orange-hi); }
+.hero h1 {
+  font-family: var(--f-display); font-weight: 800; text-transform: uppercase;
+  font-size: clamp(40px, 5.6vw, 74px); line-height: 1; letter-spacing: -.005em; margin-top: 16px;
+}
+.hero h1 .hl { color: var(--orange); }
+.hero h1 .tape { background: linear-gradient(transparent 12%, var(--yellow) 12%, var(--yellow) 92%, transparent 92%); padding: 0 .1em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.hero .sub { font-size: 19px; color: var(--muted); max-width: 46ch; margin-top: 20px; }
+.hero .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.proof { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); }
+.proof div { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--muted); line-height: 1.25; }
+.proof strong { display: block; color: var(--ink); font-size: 18px; font-family: var(--f-display); font-weight: 700; letter-spacing: .01em; }
+.stars { color: #e3a008; letter-spacing: 1px; font-size: 15px; }
+
+.hero-stage {
+  position: relative; background: var(--navy-900);
+  margin-right: calc(-1 * max(var(--gr), (100vw - 1240px) / 2 + var(--gr)));
+  display: flex; align-items: flex-start; justify-content: center; padding: 72px 32px 150px; min-height: 100%;
+  background-image:
+    linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.hero-stage .collage { width: 100%; max-width: 500px; aspect-ratio: 400 / 290; }
+.hero-stage .collage > svg { width: 100%; height: 100%; display: block; }
+.offer-tag {
+  position: absolute; left: 24px; bottom: 26px; width: 230px; max-width: calc(100% - 48px);
+  background: var(--yellow); color: var(--navy-900); padding: 16px 18px 16px 34px;
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,.5); transform: rotate(-3deg);
+}
+.offer-tag::before { content: ""; position: absolute; left: 14px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: var(--navy-900); }
+.offer-tag .t { font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.offer-tag .n { font-size: 15px; font-weight: 700; line-height: 1.2; margin-top: 4px; }
+.offer-tag .p { font-family: var(--f-display); font-weight: 800; font-size: 46px; line-height: .95; margin-top: 6px; }
+.offer-tag .p sup { font-size: .45em; vertical-align: .9em; margin-right: 2px; }
+.offer-tag .s { font-size: 12.5px; font-weight: 600; }
+.timer-chip {
+  position: absolute; top: 22px; right: 22px; background: rgba(255,255,255,.1); color: #fff;
+  border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px; backdrop-filter: blur(4px);
+}
+.timer-chip svg.i { width: 16px; height: 16px; color: var(--yellow); }
+
+/* ---------- Benefícios ---------- */
+.perks { background: var(--navy-700); color: #fff; }
+.perks .wrap { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.perk { display: flex; gap: 14px; align-items: center; padding: 20px 18px; border-left: 1px solid rgba(255,255,255,.12); }
+.perk:first-child { border-left: 0; padding-left: 0; }
+.perk .ic { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,210,63,.14); color: var(--yellow); display: grid; place-items: center; flex: none; }
+.perk .ic svg.i { width: 22px; height: 22px; }
+.perk b { display: block; font-size: 15.5px; }
+.perk span { font-size: 13.5px; color: #b9cadb; line-height: 1.35; display: block; }
+
+/* ---------- Seções ---------- */
+.sec { padding-block: 64px 8px; }
+.sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; }
+.sec-head h2 { font-family: var(--f-display); font-weight: 800; text-transform: uppercase; font-size: clamp(30px, 3.6vw, 44px); line-height: .95; margin-top: 8px; }
+.sec-head p { color: var(--muted); max-width: 52ch; margin-top: 8px; }
+.countdown { display: flex; gap: 6px; align-items: center; font-size: 14px; color: var(--muted); font-weight: 600; }
+.countdown .box { background: var(--navy-900); color: #fff; border-radius: 4px; padding: 6px 8px; min-width: 44px; text-align: center; font-family: var(--f-display); font-weight: 700; font-size: 22px; line-height: 1; }
+.countdown .box small { display: block; font-family: var(--f-body); font-size: 10px; font-weight: 600; color: #9fb3c8; margin-top: 3px; text-transform: uppercase; }
+
+/* ---------- Card de produto ---------- */
+.card {
+  position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  display: flex; flex-direction: column; overflow: hidden; min-width: 0; transition: box-shadow .2s, border-color .2s;
+}
+.card:hover { border-color: #b8c4d0; box-shadow: 0 14px 30px -18px rgba(11,34,57,.45); }
+.card .art { position: relative; background: linear-gradient(180deg, #f1f4f7, var(--tile)); aspect-ratio: 4 / 3; max-width: 100%; }
+.art svg { display: block; width: 100%; height: 100%; }
+.flag { position: absolute; top: 10px; left: 10px; display: flex; flex-direction: column; gap: 5px; align-items: flex-start; }
+.flag span { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 4px 8px; border-radius: 3px; }
+.flag .off { background: var(--yellow); color: var(--navy-900); font-size: 13px; }
+.flag .hot { background: var(--navy-900); color: #fff; }
+.card .body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+.card .meta { font-size: 12px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; font-weight: 600; }
+.card h3 { font-size: 16px; font-weight: 700; line-height: 1.3; margin-top: 4px; }
+.card .spec { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+.pricebox { margin-top: auto; padding-top: 14px; }
+.pricebox .was { font-size: 13px; color: var(--muted); text-decoration: line-through; }
+.pricebox .pix { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.pricebox .pix b { font-family: var(--f-display); font-weight: 800; font-size: 30px; line-height: 1; letter-spacing: -.005em; }
+.pricebox .pix span { font-size: 13px; font-weight: 700; color: var(--wa); }
+.pricebox .card-p { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+.card .add { margin-top: 12px; }
+.stepper { display: flex; align-items: stretch; border: 2px solid var(--navy-900); border-radius: var(--r); overflow: hidden; }
+.stepper button { width: 42px; border: 0; background: var(--navy-100); cursor: pointer; font-size: 19px; font-weight: 700; color: var(--navy-900); }
+.stepper button:hover { background: #d3dfeb; }
+.stepper input { flex: 1; min-width: 0; height: 40px; border: 0; text-align: center; font-weight: 700; font-size: 16px; -moz-appearance: textfield; }
 .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.empty { grid-column: 1 / -1; padding: 40px 0; text-align: center; color: var(--muted); }
+.added { font-size: 12px; color: var(--wa); font-weight: 700; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
 
-/* Calculator */
-.calc {
-  border: 1px dashed var(--muted); border-radius: 10px; padding: 20px;
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 24px; margin-bottom: 36px;
-}
-.calc h2 { font-size: 20px; font-weight: 850; font-stretch: 110%; text-transform: uppercase; }
-.calc p { margin: 8px 0 0; color: var(--muted); font-size: 14px; max-width: 46ch; }
-.calc form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: end; }
-.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.field label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-.field input, .field select {
-  width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface);
-}
-.calc-out {
-  grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-  background: var(--accent-soft); border-radius: 8px; padding: 12px 14px;
-}
-.calc-out strong { font-family: var(--f-display); font-size: 24px; font-weight: 900; font-variant-numeric: tabular-nums; }
-.calc-out span { font-size: 13px; color: var(--muted); }
+.row4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 
-/* Footer */
-footer { border-top: 1px solid var(--line); background: var(--surface); }
-footer .wrap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding-block: 28px; font-size: 14px; }
-footer h3 { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
-footer p { margin: 0; color: var(--muted); }
-.fine { grid-column: 1 / -1; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+/* ---------- Kits ---------- */
+.kits { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.kit { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
+.kit-top { background: var(--navy-900); color: #fff; padding: 18px 18px 16px; position: relative; }
+.kit-top .save { position: absolute; top: 14px; right: 14px; background: var(--yellow); color: var(--navy-900); font-weight: 800; font-size: 12.5px; padding: 4px 8px; border-radius: 3px; }
+.kit-top .use { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--yellow); }
+.kit-top h3 { font-family: var(--f-display); font-weight: 800; font-size: 27px; text-transform: uppercase; line-height: 1; margin-top: 6px; padding-right: 60px; }
+.kit ul { list-style: none; margin: 0; padding: 14px 18px 4px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; flex: 1; }
+.kit li { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 10px; align-items: center; }
+.kit li .q { font-family: var(--f-display); font-weight: 700; font-size: 18px; color: var(--orange); text-align: right; }
+.kit li small { display: block; color: var(--muted); font-size: 12.5px; }
+.kit .foot { padding: 14px 18px 18px; border-top: 1px dashed var(--line); margin-top: 10px; }
+.kit .foot .was { font-size: 13px; color: var(--muted); }
+.kit .foot .was s { margin-left: 4px; }
+.kit .foot b { font-family: var(--f-display); font-weight: 800; font-size: 32px; line-height: 1.05; display: block; }
+.kit .foot .btn { margin-top: 12px; }
 
-/* Quote bar + drawer */
+/* ---------- Catálogo ---------- */
+.shop { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; align-items: start; }
+.side { position: sticky; top: 150px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
+.side h3 { font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.side .list { display: flex; flex-direction: column; gap: 2px; }
+.side .list button {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%;
+  border: 0; background: none; text-align: left; padding: 9px 10px; border-radius: 5px; cursor: pointer; font-size: 15px; font-weight: 600;
+}
+.side .list button:hover { background: var(--bg); }
+.side .list button[aria-pressed="true"] { background: var(--navy-900); color: #fff; }
+.side .list button span { font-size: 12.5px; opacity: .65; font-weight: 500; }
+.side hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
+.side .help { font-size: 14px; color: var(--muted); }
+.side .help b { color: var(--ink); display: block; font-size: 15px; margin-bottom: 4px; }
+.side .help .btn { margin-top: 12px; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.toolbar .count { font-size: 14.5px; color: var(--muted); }
+.toolbar .count b { color: var(--ink); }
+.toolbar label { font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.toolbar select { border: 1px solid var(--line); border-radius: var(--r); padding: 8px 10px; background: #fff; font-weight: 600; font-size: 14px; }
+.mchips { display: none; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 10px; scrollbar-width: none; }
+.mchips button { flex: none; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.mchips button[aria-pressed="true"] { background: var(--navy-900); border-color: var(--navy-900); color: #fff; }
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 1240px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.empty { grid-column: 1 / -1; background: #fff; border: 1px dashed var(--line); border-radius: 8px; padding: 40px 20px; text-align: center; color: var(--muted); }
+.empty .btn { margin-top: 14px; }
+
+/* ---------- Calculadora ---------- */
+.calc { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.calc-intro { background: var(--orange-50); padding: 32px; border-right: 1px solid var(--line); }
+.calc-intro h2 { font-family: var(--f-display); font-weight: 800; font-size: clamp(30px, 3.4vw, 42px); text-transform: uppercase; line-height: .95; margin-top: 8px; }
+.calc-intro p { color: var(--muted); margin-top: 12px; }
+.calc-intro ul { margin: 18px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; }
+.calc-intro li { display: flex; gap: 8px; align-items: center; }
+.calc-intro li svg.i { color: var(--orange); width: 18px; height: 18px; }
+.calc-main { padding: 28px 32px 32px; }
+.tabs { display: flex; gap: 6px; border-bottom: 2px solid var(--line); margin-bottom: 22px; overflow-x: auto; }
+.tabs button { flex: none; border: 0; background: none; cursor: pointer; padding: 10px 14px; font-weight: 700; font-size: 15px; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -2px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--orange-hi); }
+.fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field label { font-size: 13px; font-weight: 700; color: var(--muted); }
+.field input, .field select { width: 100%; padding: 11px 12px; border: 1px solid #c4cfd9; border-radius: var(--r); background: #fff; font-size: 16px; }
+.field input:focus, .field select:focus { border-color: var(--navy-700); outline: none; box-shadow: 0 0 0 3px var(--navy-100); }
+.result { margin-top: 20px; background: var(--navy-900); color: #fff; border-radius: 8px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.result .lines { display: flex; flex-direction: column; gap: 4px; }
+.result .big { font-family: var(--f-display); font-weight: 800; font-size: 30px; line-height: 1; }
+.result .big span { color: var(--yellow); }
+.result small { color: #b9cadb; font-size: 13.5px; }
+
+/* ---------- Como funciona ---------- */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; counter-reset: s; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 24px; position: relative; }
+.step .no { font-family: var(--f-display); font-weight: 800; font-size: 54px; line-height: .8; color: var(--orange-hi); }
+.step h3 { font-size: 19px; margin-top: 14px; }
+.step p { color: var(--muted); margin-top: 6px; font-size: 15px; }
+
+/* ---------- Profissional ---------- */
+.pro { margin-top: 64px; background: var(--navy-900); color: #fff; position: relative; overflow: hidden; }
+.pro::after {
+  content: ""; position: absolute; right: -60px; top: 0; bottom: 0; width: 420px;
+  background: repeating-linear-gradient(-45deg, var(--yellow) 0 22px, var(--navy-900) 22px 44px); opacity: .9;
+  clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%);
+}
+.pro .wrap { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: center; padding-block: 48px; }
+.pro h2 { font-family: var(--f-display); font-weight: 800; font-size: clamp(32px, 4vw, 50px); text-transform: uppercase; line-height: .95; }
+.pro h2 span { color: var(--yellow); }
+.pro p { color: #c9d6e3; margin-top: 12px; max-width: 58ch; font-size: 17px; }
+.pro ul { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 18px 0 0; padding: 0; list-style: none; font-size: 15px; font-weight: 600; }
+.pro li { display: flex; align-items: center; gap: 8px; }
+.pro li svg.i { color: var(--yellow); }
+.pro .cta-box { background: #fff; color: var(--ink); border-radius: 10px; padding: 22px; width: 300px; max-width: 100%; box-shadow: 0 20px 40px -20px rgba(0,0,0,.6); }
+.pro .cta-box b { font-family: var(--f-display); font-size: 24px; text-transform: uppercase; display: block; line-height: 1; }
+.pro .cta-box p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+.pro .cta-box .btn { margin-top: 14px; }
+
+/* ---------- Depoimentos ---------- */
+.reviews { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.review { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+.review q { font-size: 16px; quotes: "“" "”"; }
+.review .who { display: flex; align-items: center; gap: 10px; margin-top: auto; font-size: 14px; }
+.review .av { width: 38px; height: 38px; border-radius: 50%; background: var(--navy-100); color: var(--navy-700); display: grid; place-items: center; font-weight: 800; }
+.review .who small { display: block; color: var(--muted); }
+.score { display: flex; align-items: center; gap: 14px; }
+.score b { font-family: var(--f-display); font-size: 48px; line-height: 1; font-weight: 800; }
+.score small { color: var(--muted); font-size: 13px; display: block; }
+.demo-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: var(--navy-100); color: var(--navy-700); padding: 2px 6px; border-radius: 3px; margin-left: 8px; vertical-align: middle; }
+
+/* ---------- Entrega ---------- */
+.delivery { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 28px; }
+.map svg { width: 100%; height: auto; display: block; max-width: 460px; margin: 0 auto; }
+.zones { width: 100%; border-collapse: collapse; font-size: 15px; }
+.zones th { text-align: left; font-size: 12.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }
+.zones td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.zones td:first-child { font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.zones .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.zones .free { color: var(--wa); font-weight: 700; }
+.delivery .note { font-size: 13.5px; color: var(--muted); margin-top: 12px; }
+
+/* ---------- FAQ ---------- */
+.faq { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.faq details { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
+.faq summary { cursor: pointer; font-weight: 700; font-size: 16px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; font-size: 22px; line-height: 1; color: var(--orange); flex: none; }
+.faq details[open] summary::after { content: "−"; }
+.faq details p { color: var(--muted); margin-top: 10px; font-size: 15px; }
+
+/* ---------- Fechamento + footer ---------- */
+.closing { margin-top: 64px; background: var(--orange); color: #fff; }
+.closing .wrap { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding-block: 36px; }
+.closing h2 { font-family: var(--f-display); font-weight: 800; font-size: clamp(28px, 3.4vw, 42px); text-transform: uppercase; line-height: 1; }
+.closing p { color: #ffe3d2; margin-top: 6px; }
+.closing .acts { display: flex; gap: 12px; flex-wrap: wrap; }
+footer { background: var(--navy-900); color: #b9cadb; font-size: 14.5px; }
+footer .wrap { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 32px; padding-block: 44px 24px; }
+footer h3 { color: #fff; font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 12px; }
+footer p + p { margin-top: 6px; }
+footer .logo b { color: #fff; }
+footer .logo small { color: #9fb3c8; }
+footer .pay { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+footer .pay span { border: 1px solid rgba(255,255,255,.2); border-radius: 4px; padding: 3px 8px; font-size: 12.5px; font-weight: 600; color: #fff; }
+.fine { grid-column: 1 / -1; border-top: 1px solid rgba(255,255,255,.12); padding-top: 18px; font-size: 12.5px; color: #8ea3b8; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+/* ---------- Barra de orçamento + gaveta ---------- */
 .qbar {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
-  background: var(--ink); color: var(--bg);
-  padding: 12px var(--gutter-r) calc(12px + env(safe-area-inset-bottom, 0px)) var(--gutter-l);
-  transform: translateY(110%); transition: transform .25s ease;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; background: var(--surface);
+  box-shadow: 0 -8px 24px -12px rgba(11,34,57,.35); border-top: 1px solid var(--line);
+  padding: 10px var(--gr) calc(10px + env(safe-area-inset-bottom, 0px)) var(--gl);
 }
-.qbar.on { transform: none; }
-.qbar .in { max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.qbar .sum { font-size: 14px; }
-.qbar .sum b { font-family: var(--f-display); font-size: 20px; font-variant-numeric: tabular-nums; margin-left: 6px; }
+.qbar .in { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+.qbar .sum { flex: 1; min-width: 0; font-size: 14px; color: var(--muted); line-height: 1.25; }
+.qbar .sum b { display: block; color: var(--ink); font-family: var(--f-display); font-size: 24px; font-weight: 800; }
+.qbar .sum .pixl { color: var(--wa); font-weight: 700; }
+.qbar .hint { font-size: 14.5px; color: var(--muted); }
+.qbar .hint b { color: var(--ink); }
 
-.sheet-bg { position: fixed; inset: 0; z-index: 40; background: rgba(8, 14, 17, .55); }
+.sheet-bg { position: fixed; inset: 0; z-index: 70; background: rgba(11,34,57,.55); }
 .sheet {
-  position: fixed; z-index: 41; right: 0; top: 0; bottom: 0; width: min(440px, 100%);
-  background: var(--surface); display: flex; flex-direction: column;
-  padding: calc(16px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) 20px;
+  position: fixed; z-index: 71; right: 0; top: 0; bottom: 0; width: min(460px, 100%); background: var(--surface);
+  display: flex; flex-direction: column;
+  padding: calc(18px + env(safe-area-inset-top, 0px)) max(22px, env(safe-area-inset-right, 0px)) calc(18px + env(safe-area-inset-bottom, 0px)) 22px;
+  box-shadow: -20px 0 40px -20px rgba(0,0,0,.4);
 }
-.sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.sheet-head h2 { font-size: 20px; font-weight: 850; font-stretch: 110%; text-transform: uppercase; }
-.close { border: 0; background: transparent; cursor: pointer; font-size: 26px; line-height: 1; padding: 4px 8px; color: var(--muted); }
-.lines { list-style: none; padding: 0; margin: 14px 0 0; overflow-y: auto; flex: 1; display: flex; flex-direction: column; }
-.line { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
-.line .art { background: var(--tile); border-radius: 5px; aspect-ratio: 4/3; max-width: 100%; }
-.line .nm { font-size: 14px; font-weight: 600; line-height: 1.3; }
-.line .sub { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.line .right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-.line .stepper button { width: 28px; height: 30px; font-size: 15px; }
-.line .stepper input { width: 40px; height: 30px; font-size: 13.5px; }
-.totals { border-top: 2px solid var(--ink); margin-top: 8px; padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
-.totals .row { display: flex; justify-content: space-between; align-items: baseline; }
-.totals .row b { font-family: var(--f-display); font-size: 26px; font-variant-numeric: tabular-nums; }
-.totals .field input { background: var(--bg); }
-.wa {
-  display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
-  background: #1f8f52; color: #fff; border-radius: 6px; padding: 12px; font-weight: 700;
-}
-.wa svg { width: 18px; height: 18px; }
-.note { font-size: 12px; color: var(--muted); margin: 0; }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; }
+.sheet-head h2 { font-family: var(--f-display); font-weight: 800; font-size: 28px; text-transform: uppercase; }
+.x { border: 0; background: var(--bg); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 22px; line-height: 1; color: var(--muted); }
+.qlines { list-style: none; padding: 0; margin: 14px 0 0; overflow-y: auto; flex: 1; }
+.qline { display: grid; grid-template-columns: 56px minmax(0, 1fr) 112px; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.qline .art { background: var(--tile); border-radius: 5px; aspect-ratio: 4/3; max-width: 100%; }
+.qline .nm { font-size: 14.5px; font-weight: 700; line-height: 1.25; }
+.qline .sub { font-size: 13px; color: var(--muted); }
+.qline .stepper { border-width: 1px; }
+.qline .stepper button { width: 30px; font-size: 16px; }
+.qline .stepper input { height: 32px; font-size: 14px; }
+.qline .lt { text-align: right; font-size: 13px; font-weight: 700; margin-top: 4px; }
+.qempty { padding: 32px 0; text-align: center; color: var(--muted); }
+.totals { border-top: 2px solid var(--navy-900); margin-top: 6px; padding-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.totals .row { display: flex; justify-content: space-between; align-items: baseline; font-size: 14.5px; color: var(--muted); }
+.totals .row.main { color: var(--ink); }
+.totals .row.main b { font-family: var(--f-display); font-size: 32px; font-weight: 800; }
+.totals .row .g { color: var(--wa); font-weight: 700; }
+.totals .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.totals .field input { padding: 10px; font-size: 15px; }
+.totals .note { font-size: 12.5px; color: var(--muted); }
+.ship-bar { font-size: 13px; color: var(--muted); }
+.ship-bar .track { height: 6px; background: var(--line); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+.ship-bar .fill { height: 100%; background: var(--wa); border-radius: 3px; transition: width .3s; }
+.ship-bar b { color: var(--ink); }
 
+.toast {
+  position: fixed; left: 50%; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px);
+  background: var(--navy-900); color: #fff; padding: 10px 16px; border-radius: 6px; font-size: 14px; font-weight: 600;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 80; max-width: calc(100% - 32px);
+}
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 1080px) {
+  .row4, .kits { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .shop { grid-template-columns: minmax(0, 1fr); }
+  .side { display: none; }
+  .mchips { display: flex; }
+  .perks .wrap { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .perk:nth-child(3) { border-left: 0; padding-left: 0; }
+  .perk { border-top: 1px solid rgba(255,255,255,.12); }
+  .perk:nth-child(-n+2) { border-top: 0; }
+  footer .wrap { grid-template-columns: 1fr 1fr; }
+  .pro::after { opacity: .25; }
+}
 @media (max-width: 860px) {
-  .hero .wrap { grid-template-columns: minmax(0, 1fr); padding-block: 28px; }
-  .calc { grid-template-columns: minmax(0, 1fr); }
-  footer .wrap { grid-template-columns: minmax(0, 1fr); }
+  .util .r span.opt { display: none; }
+  .head .bar1 { grid-template-columns: auto auto; }
+  .search { grid-column: 1 / -1; grid-row: 2; max-width: none; }
+  .head-actions { justify-self: end; }
+  .pro-link { display: none; }
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .hero-copy { padding-block: 36px 32px; }
+  .hero-stage { margin-left: calc(-1 * var(--gl)); margin-right: calc(-1 * var(--gr)); min-height: 380px; padding: 64px 20px 150px; }
+  .calc, .delivery { grid-template-columns: minmax(0, 1fr); }
+  .calc-intro { border-right: 0; border-bottom: 1px solid var(--line); }
+  .steps, .reviews, .faq { grid-template-columns: minmax(0, 1fr); }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pro .wrap { grid-template-columns: minmax(0, 1fr); }
+  .pro::after { display: none; }
 }
 @media (max-width: 560px) {
-  .top .wrap { flex-wrap: wrap; }
-  .search { flex-basis: 100%; }
-  .search input { max-width: none; }
-  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  .card .body { padding: 10px; }
-  .card h3 { font-size: 14px; }
-  .buy { flex-direction: column; align-items: stretch; }
-  .buy .btn { width: 100%; }
-  .buy .stepper { justify-content: space-between; }
-  .buy .stepper input { flex: 1; }
-  .deal { grid-template-columns: 96px minmax(0, 1fr); }
-  .calc form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .calc form .field.full { grid-column: 1 / -1; }
+  body { font-size: 15px; }
+  .util .wrap { justify-content: center; text-align: center; }
+  .util .r { display: none; }
+  .logo b { font-size: 21px; }
+  .logo svg { width: 38px; height: 38px; }
+  .search select { display: none; }
+  .quote-btn .lbl { display: none; }
+  .hero .sub { font-size: 17px; }
+  .hero .ctas .btn { flex: 1 1 100%; }
+  .proof { gap: 14px 20px; }
+  .row4, .kits, .grid { gap: 10px; }
+  .kits { grid-template-columns: minmax(0, 1fr); }
+  .card .body { padding: 12px; }
+  .card h3 { font-size: 14.5px; }
+  .card .spec { display: none; }
+  .pricebox .pix b { font-size: 24px; }
+  .perks .wrap { grid-template-columns: minmax(0, 1fr); }
+  .perk, .perk:nth-child(3) { border-left: 0; padding-left: 0; border-top: 1px solid rgba(255,255,255,.12); }
+  .perk:nth-child(2) { border-top: 1px solid rgba(255,255,255,.12); }
+  .perk:first-child { border-top: 0; }
+  .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fields .full { grid-column: 1 / -1; }
+  .calc-intro, .calc-main, .delivery { padding: 20px; }
+  footer .wrap { grid-template-columns: minmax(0, 1fr); }
+  .qbar .hint { font-size: 13.5px; }
+  .delivery { padding: 18px; }
 }
-@media (prefers-reduced-motion: reduce) { .qbar { transition: none; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; }
+}
 </style>
 
-<header class="top">
+<!-- Barra de utilidade: a promessa de frete é o primeiro texto lido na página -->
+<div class="util">
   <div class="wrap">
-    <a class="brand" href="#inicio">
-      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-        <rect width="40" height="40" rx="7" fill="var(--accent)"/>
-        <g fill="var(--accent-ink)">
-          <rect x="7" y="24" width="12" height="7" rx="1"/><rect x="21" y="24" width="12" height="7" rx="1"/>
-          <rect x="14" y="15" width="12" height="7" rx="1"/><rect x="7" y="15" width="5" height="7" rx="1"/>
-          <rect x="28" y="15" width="5" height="7" rx="1"/><rect x="11" y="8" width="18" height="5" rx="1" opacity=".6"/>
-        </g>
-      </svg>
-      <span class="brand-name" id="storeName">Depósito Alicerce<small id="storeTag">MATERIAIS PARA CONSTRUÇÃO</small></span>
-    </a>
-    <div class="search">
-      <label for="q" hidden>Buscar produto</label>
-      <input id="q" type="search" placeholder="Buscar cimento, tubo, tinta…" autocomplete="off">
+    <span><b>Frete grátis</b> acima de R$ 500 na Zona 1 · entrega no mesmo dia para pedidos até 12h</span>
+    <div class="r">
+      <span class="opt"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Seg a sex 7h–18h · Sáb 7h–13h</span>
+      <span><svg class="i" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span id="phoneTxt">(00) 0000-0000</span></span>
     </div>
   </div>
+</div>
+
+<header class="head">
+  <div class="wrap bar1">
+    <a class="logo" href="#topo" aria-label="Depósito Alicerce, início">
+      <svg viewBox="0 0 44 44" aria-hidden="true">
+        <rect width="44" height="44" rx="6" fill="#0b2239"/>
+        <path d="M22 7 37 18H7Z" fill="#ffd23f"/>
+        <g fill="#f26a1b"><rect x="8" y="21" width="13" height="7" rx="1"/><rect x="23" y="21" width="13" height="7" rx="1"/></g>
+        <g fill="#fff"><rect x="8" y="30" width="6" height="7" rx="1"/><rect x="16" y="30" width="13" height="7" rx="1"/><rect x="31" y="30" width="5" height="7" rx="1"/></g>
+      </svg>
+      <span><b id="brandName">Depósito Alicerce</b><small id="brandTag">MATERIAIS PARA CONSTRUÇÃO</small></span>
+    </a>
+    <form class="search" id="searchForm" role="search">
+      <label for="sCat" hidden>Setor</label>
+      <select id="sCat"></select>
+      <label for="q" hidden>Buscar produto</label>
+      <input id="q" type="search" placeholder="O que sua obra precisa hoje?" autocomplete="off">
+      <button type="submit" aria-label="Buscar"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+    </form>
+    <div class="head-actions">
+      <a class="pro-link" href="#profissional">Sou profissional</a>
+      <button class="btn quote-btn" id="openQuote2" type="button">
+        <svg class="i" viewBox="0 0 24 24"><path d="M9 3h6l1 2h3v16H5V5h3z"/><path d="M9 11h6M9 15h4"/></svg>
+        <span class="lbl">Meu orçamento</span><span class="n" id="hCount" hidden>0</span>
+      </button>
+    </div>
+  </div>
+  <nav class="cats" aria-label="Setores">
+    <div class="wrap" id="catNav"></div>
+  </nav>
 </header>
 
-<section class="hero" id="inicio">
-  <div class="wrap">
-    <div>
-      <p class="eyebrow">Catálogo · Outubro 2026</p>
-      <h1>Do alicerce<br>ao <em>acabamento</em></h1>
-      <p class="lead">Cimento, areia, tijolo, hidráulica, elétrica e tinta num só lugar. Monte seu orçamento aqui e mande direto pelo WhatsApp: a gente confere estoque e frete na hora.</p>
-      <ul class="perks">
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M2 6h11v10H2zM13 10h4l4 4v2h-8z"/><circle cx="6" cy="18" r="2" fill="var(--deep)"/><circle cx="17" cy="18" r="2" fill="var(--deep)"/></svg>Entrega própria em até 24h</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 10 5 4h14l2 6M4 10v10h16V10M3 10h18M9 20v-6h6v6"/></svg>Retirada no balcão</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>Pix ou até 10x no cartão</li>
-      </ul>
+<main id="topo">
+  <!-- HERO: promessa (esquerda, ponto de entrada do olhar) > CTA > prova social. Oferta ancorada à direita, no ponto final do Z. -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="kicker">Depósito com frota própria</span>
+        <h1>Sua obra<br>não para.<br><span class="tape">A entrega</span> <span class="hl">chega hoje.</span></h1>
+        <p class="sub">Do saco de cimento ao porcelanato: monte o orçamento aqui, envie pelo WhatsApp e receba em até 4 horas, com descarga na calçada inclusa.</p>
+        <div class="ctas">
+          <a class="btn lg" href="#catalogo">Montar meu orçamento
+            <svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn lg outline" id="heroWa" href="#" target="_blank" rel="noopener">Falar com vendedor</a>
+        </div>
+        <div class="proof">
+          <div><span class="stars" aria-hidden="true">★★★★★</span><span><strong class="num">4,9 no Google</strong>1.240 avaliações</span></div>
+          <div><span><strong class="num">+18 mil</strong>entregas em 2025</span></div>
+          <div><span><strong class="num">27 anos</strong>no mesmo endereço</span></div>
+        </div>
+      </div>
+      <div class="hero-stage">
+        <div class="timer-chip"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg><span>Oferta acaba em <b class="num" id="heroTimer">--</b></span></div>
+        <div class="collage" id="collage" aria-hidden="true"></div>
+        <div class="offer-tag">
+          <div class="t">Oferta da semana</div>
+          <div class="n" id="tagName">Cimento CP II-F-32 · 50 kg</div>
+          <div class="p num" id="tagPrice"></div>
+          <div class="s" id="tagSub"></div>
+        </div>
+      </div>
     </div>
-    <article class="deal" aria-label="Oferta da semana">
-      <div class="art" id="dealArt"></div>
+  </section>
+
+  <!-- Barra de benefícios: responde as 4 objeções de compra (prazo, preço, pagamento, sobra) antes do catálogo -->
+  <section class="perks" aria-label="Vantagens">
+    <div class="wrap">
+      <div class="perk"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M2 6h11v10H2zM13 10h4l4 4v2h-8z"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span><div><b>Entrega em até 4h</b><span>Frota própria com munck para telha e caixa d'água</span></div></div>
+      <div class="perk"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M20 12 12 20l-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></span><div><b>Preço de depósito</b><span>Achou menor em loja da cidade? A gente cobre</span></div></div>
+      <div class="perk"><span class="ic"><svg class="i" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg></span><div><b>5% off no Pix</b><span>Ou em até 10x sem juros no cartão</span></div></div>
+      <div class="perk"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></span><div><b>Devolução de sobra</b><span>Sacos fechados voltam em até 30 dias</span></div></div>
+    </div>
+  </section>
+
+  <!-- OFERTAS: escassez com prazo real e ancoragem de preço (de/por) -->
+  <section class="sec wrap" id="ofertas">
+    <div class="sec-head">
+      <div><span class="kicker">Válido até sábado, 13h</span><h2>Ofertas da semana</h2></div>
+      <div class="countdown num" id="countdown" aria-label="Tempo restante da oferta"></div>
+    </div>
+    <div class="row4" id="dealsRow"></div>
+  </section>
+
+  <!-- KITS: aumenta ticket médio e tira do cliente o trabalho de calcular -->
+  <section class="sec wrap" id="kits">
+    <div class="sec-head">
+      <div><span class="kicker">Calculado por quem entende de obra</span><h2>Kits prontos por etapa</h2></div>
+      <p>Quantidades dimensionadas para a área indicada, com desconto sobre a compra avulsa.</p>
+    </div>
+    <div class="kits" id="kitsRow"></div>
+  </section>
+
+  <!-- CATÁLOGO -->
+  <section class="sec wrap" id="catalogo">
+    <div class="sec-head">
+      <div><span class="kicker">Mais de 3 mil itens na loja</span><h2>Catálogo</h2></div>
+    </div>
+    <div class="shop">
+      <aside class="side" aria-label="Filtros">
+        <h3>Setores</h3>
+        <div class="list" id="sideList"></div>
+        <hr>
+        <div class="help">
+          <b>Não achou o que precisa?</b>
+          Mande a lista do seu engenheiro ou uma foto. A gente orça tudo em 15 minutos.
+          <a class="btn wa sm block" id="sideWa" href="#" target="_blank" rel="noopener">Enviar lista pelo WhatsApp</a>
+        </div>
+      </aside>
       <div>
-        <span class="tag">Oferta da semana</span>
-        <h2 id="dealName"></h2>
-        <div class="was" id="dealWas"></div>
-        <div class="now" id="dealNow"></div>
-        <button class="btn" id="dealAdd" type="button">Adicionar ao orçamento</button>
+        <div class="mchips" id="mChips" role="toolbar" aria-label="Setores"></div>
+        <div class="toolbar">
+          <span class="count" id="count"></span>
+          <label for="sort">Ordenar
+            <select id="sort">
+              <option value="rel">Mais vendidos</option>
+              <option value="asc">Menor preço</option>
+              <option value="desc">Maior preço</option>
+              <option value="off">Maior desconto</option>
+            </select>
+          </label>
+        </div>
+        <div class="grid" id="grid"></div>
       </div>
-    </article>
-  </div>
-</section>
-
-<main class="wrap">
-  <div class="bar">
-    <div class="bar-head">
-      <h2>Produtos</h2>
-      <span class="count" id="count"></span>
     </div>
-    <div class="chips" id="chips" role="toolbar" aria-label="Filtrar por setor"></div>
-  </div>
-  <div class="grid" id="grid"></div>
+  </section>
 
-  <section class="calc" aria-labelledby="calcTitle">
-    <div>
-      <h2 id="calcTitle">Quantos tijolos para a parede?</h2>
-      <p>Informe as medidas e o sistema calcula a quantidade com 10% de margem para quebra e recorte. Desconte portas e janelas da área.</p>
+  <!-- CALCULADORA: ferramenta útil gera confiança e leva direto ao orçamento -->
+  <section class="sec wrap" id="calculadora">
+    <div class="calc">
+      <div class="calc-intro">
+        <span class="kicker">Calculadora de obra</span>
+        <h2>Compre a quantidade certa</h2>
+        <p>Informe as medidas e veja quanto material levar. O resultado entra direto no seu orçamento.</p>
+        <ul>
+          <li><svg class="i" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>Margem de perda já incluída</li>
+          <li><svg class="i" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>Consumo pelas tabelas dos fabricantes</li>
+          <li><svg class="i" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>Sobrou saco fechado? Devolvemos em 30 dias</li>
+        </ul>
+      </div>
+      <div class="calc-main">
+        <div class="tabs" role="tablist" id="calcTabs">
+          <button role="tab" type="button" data-t="parede" aria-selected="true">Parede</button>
+          <button role="tab" type="button" data-t="contrapiso" aria-selected="false">Contrapiso</button>
+          <button role="tab" type="button" data-t="pintura" aria-selected="false">Pintura</button>
+          <button role="tab" type="button" data-t="piso" aria-selected="false">Piso</button>
+        </div>
+        <form id="calcForm">
+          <div class="fields" id="calcFields"></div>
+          <div class="result">
+            <div class="lines" id="calcOut"></div>
+            <button class="btn light" type="submit">Adicionar ao orçamento</button>
+          </div>
+        </form>
+      </div>
     </div>
-    <form id="calcForm">
-      <div class="field">
-        <label for="cW">Comprimento (m)</label>
-        <input id="cW" type="number" min="0" step="0.1" value="6" inputmode="decimal">
+  </section>
+
+  <!-- COMO FUNCIONA: sequência real de compra, por isso numerada -->
+  <section class="sec wrap" id="como">
+    <div class="sec-head"><div><span class="kicker">Sem fila, sem balcão</span><h2>Como comprar</h2></div></div>
+    <div class="steps">
+      <div class="step"><div class="no">1</div><h3>Monte o orçamento</h3><p>Escolha produtos, kits ou use a calculadora. O total já aparece com o desconto do Pix.</p></div>
+      <div class="step"><div class="no">2</div><h3>Envie pelo WhatsApp</h3><p>A lista chega pronta para o vendedor, que confirma estoque, frete e horário em minutos.</p></div>
+      <div class="step"><div class="no">3</div><h3>Receba na obra</h3><p>Pague no Pix ou cartão e receba no mesmo dia. Descarga na calçada inclusa.</p></div>
+    </div>
+  </section>
+
+  <!-- B2B: pedreiro e construtora compram toda semana; vale um canal próprio -->
+  <section class="pro" id="profissional">
+    <div class="wrap">
+      <div>
+        <span class="kicker" style="color:var(--yellow)">Cadastro profissional</span>
+        <h2 style="margin-top:10px">Pedreiro, mestre de obras<br>ou construtora? <span>Preço de parceiro.</span></h2>
+        <p>Tabela especial a partir da segunda compra, prazo no boleto para CNPJ e um vendedor dedicado que já conhece suas obras.</p>
+        <ul>
+          <li><svg class="i" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>Até 8% de desconto em básicos</li>
+          <li><svg class="i" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>Boleto 28 dias</li>
+          <li><svg class="i" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>Entrega programada</li>
+        </ul>
       </div>
-      <div class="field">
-        <label for="cH">Altura (m)</label>
-        <input id="cH" type="number" min="0" step="0.1" value="2.8" inputmode="decimal">
+      <div class="cta-box">
+        <b>Cadastro em 2 minutos</b>
+        <p>Envie nome, CPF ou CNPJ e cidade da obra. Aprovação no mesmo dia.</p>
+        <a class="btn block" id="proWa" href="#" target="_blank" rel="noopener">Quero ser parceiro</a>
       </div>
-      <div class="field full">
-        <label for="cT">Material</label>
-        <select id="cT">
-          <option value="tijolo-8f">Tijolo 8 furos (25 un/m²)</option>
-          <option value="bloco-14">Bloco de concreto (12,5 un/m²)</option>
-        </select>
+    </div>
+  </section>
+
+  <!-- PROVA SOCIAL -->
+  <section class="sec wrap" id="avaliacoes">
+    <div class="sec-head">
+      <div><span class="kicker">Quem compra, volta</span><h2>O que dizem os clientes<span class="demo-tag">exemplo</span></h2></div>
+      <div class="score"><b class="num">4,9</b><div><span class="stars">★★★★★</span><small>1.240 avaliações no Google</small></div></div>
+    </div>
+    <div class="reviews">
+      <div class="review"><span class="stars">★★★★★</span><q>Pedi 40 sacos de cimento às 10h e às 14h já estava na obra. O motorista ainda ajudou a guardar na garagem.</q><div class="who"><span class="av">RM</span><div><b>Ricardo M.</b><small>Mestre de obras</small></div></div></div>
+      <div class="review"><span class="stars">★★★★★</span><q>Usei o kit de piso para o banheiro e sobraram só duas peças. Foi muito mais prático que calcular sozinha.</q><div class="who"><span class="av">AL</span><div><b>Ana L.</b><small>Reforma do apartamento</small></div></div></div>
+      <div class="review"><span class="stars">★★★★★</span><q>Compro toda semana para três obras. O boleto de 28 dias e o vendedor fixo fazem toda a diferença.</q><div class="who"><span class="av">JC</span><div><b>JC Construções</b><small>Construtora</small></div></div></div>
+    </div>
+  </section>
+
+  <!-- ENTREGA: tabela clara elimina a pergunta mais comum do WhatsApp -->
+  <section class="sec wrap" id="entrega">
+    <div class="sec-head"><div><span class="kicker">Frota própria</span><h2>Área de entrega</h2></div></div>
+    <div class="delivery">
+      <div class="map" id="map"></div>
+      <div>
+        <table class="zones">
+          <thead><tr><th>Zona</th><th>Distância</th><th>Frete</th><th>Prazo</th></tr></thead>
+          <tbody>
+            <tr><td><span class="dot" style="background:#f26a1b"></span>Zona 1</td><td>até 5 km</td><td><span class="free">Grátis</span> acima de R$ 500<br><small>ou R$ 25</small></td><td>Mesmo dia</td></tr>
+            <tr><td><span class="dot" style="background:#2f5d8a"></span>Zona 2</td><td>5 a 12 km</td><td>R$ 45<br><small>grátis acima de R$ 1.500</small></td><td>Mesmo dia</td></tr>
+            <tr><td><span class="dot" style="background:#9fb3c8"></span>Zona 3</td><td>12 a 25 km</td><td>R$ 80</td><td>Até 24h</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Pedidos confirmados até 12h saem no mesmo dia. Carga acima de 3 toneladas é agendada com caminhão truck.</p>
       </div>
-      <div class="calc-out">
-        <div><strong id="cOut">0 un</strong><br><span id="cSub"></span></div>
-        <button class="btn" type="submit">Adicionar ao orçamento</button>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="sec wrap" id="duvidas">
+    <div class="sec-head"><div><span class="kicker">Antes de fechar</span><h2>Perguntas frequentes</h2></div></div>
+    <div class="faq">
+      <details open><summary>A descarga está inclusa?</summary><p>Sim, descarga na calçada ou no portão. Para levar até o andar ou para dentro do terreno, combine com o vendedor: cobramos R$ 1,50 por saco.</p></details>
+      <details><summary>Posso devolver o material que sobrou?</summary><p>Sacos fechados e peças inteiras voltam em até 30 dias com a nota. O valor vira crédito ou estorno no mesmo meio de pagamento.</p></details>
+      <details><summary>Quais formas de pagamento vocês aceitam?</summary><p>Pix com 5% de desconto, cartão de crédito em até 10x sem juros acima de R$ 300, débito e boleto 28 dias para cadastro profissional.</p></details>
+      <details><summary>O preço do site é o mesmo da loja?</summary><p>Sim. O orçamento enviado pelo WhatsApp vale por 48 horas, mesmo que a tabela mude nesse período.</p></details>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="wrap">
+      <div><h2>Tem a lista da obra em mãos?</h2><p>Mande foto ou PDF. A gente devolve o orçamento completo em 15 minutos.</p></div>
+      <div class="acts">
+        <a class="btn light lg" id="closeWa" href="#" target="_blank" rel="noopener">Enviar lista no WhatsApp</a>
       </div>
-    </form>
+    </div>
   </section>
 </main>
 
 <footer>
   <div class="wrap">
     <div>
-      <h3>Endereço</h3>
-      <p>Av. das Indústrias, 1450 · Distrito Industrial<br>Estacionamento para caminhão e carreto</p>
+      <a class="logo" href="#topo" aria-label="Início">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><rect width="44" height="44" rx="6" fill="#163a5f"/><path d="M22 7 37 18H7Z" fill="#ffd23f"/><g fill="#f26a1b"><rect x="8" y="21" width="13" height="7" rx="1"/><rect x="23" y="21" width="13" height="7" rx="1"/></g><g fill="#fff"><rect x="8" y="30" width="6" height="7" rx="1"/><rect x="16" y="30" width="13" height="7" rx="1"/><rect x="31" y="30" width="5" height="7" rx="1"/></g></svg>
+        <span><b id="brandName2">Depósito Alicerce</b><small>DESDE 1998</small></span>
+      </a>
+      <p style="margin-top:14px">Materiais básicos, hidráulica, elétrica, pintura e acabamento com entrega própria.</p>
     </div>
-    <div>
-      <h3>Horário</h3>
-      <p>Seg a sex 7h às 18h<br>Sábado 7h às 13h</p>
-    </div>
-    <div>
-      <h3>Pagamento</h3>
-      <p>Pix com 5% de desconto · Cartão em até 10x<br>Boleto para construtoras cadastradas</p>
-    </div>
-    <p class="fine">Imagens ilustrativas. Preços de referência sujeitos a alteração sem aviso e confirmados no orçamento. Catálogo demonstrativo.</p>
+    <div><h3>Loja</h3><p>Av. das Indústrias, 1450</p><p>Distrito Industrial</p><p>Estacionamento para caminhão</p></div>
+    <div><h3>Horário</h3><p>Seg a sex 7h às 18h</p><p>Sábado 7h às 13h</p><p>Plantão de entrega aos sábados</p></div>
+    <div><h3>Pagamento</h3><div class="pay"><span>Pix</span><span>Crédito 10x</span><span>Débito</span><span>Boleto PJ</span></div></div>
+    <div class="fine"><span>Imagens ilustrativas. Preços de referência sujeitos a alteração, confirmados no orçamento.</span><span>Catálogo demonstrativo</span></div>
   </div>
 </footer>
 
-<div class="qbar" id="qbar" aria-live="polite">
-  <div class="in">
-    <div class="sum"><span id="qItems">0 itens</span><b id="qTotal">R$ 0,00</b></div>
-    <button class="btn" id="qOpen" type="button">Ver orçamento</button>
-  </div>
+<div class="qbar" id="qbar">
+  <div class="in" id="qbarIn"></div>
 </div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div class="sheet-bg" id="sheetBg" hidden></div>
 <aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
-  <div class="sheet-head">
-    <h2 id="sheetTitle">Seu orçamento</h2>
-    <button class="close" id="sheetClose" type="button" aria-label="Fechar">×</button>
-  </div>
-  <ul class="lines" id="lines"></ul>
+  <div class="sheet-head"><h2 id="sheetTitle">Meu orçamento</h2><button class="x" id="sheetClose" type="button" aria-label="Fechar">×</button></div>
+  <ul class="qlines" id="qlines"></ul>
   <div class="totals">
-    <div class="row"><span>Total estimado</span><b id="sTotal">R$ 0,00</b></div>
-    <div class="field">
-      <label for="cliName">Seu nome</label>
-      <input id="cliName" type="text" placeholder="Ex.: João da obra" autocomplete="name">
+    <div class="ship-bar" id="shipBar"></div>
+    <div class="row"><span>Total no cartão</span><span class="num" id="tCard">R$ 0,00</span></div>
+    <div class="row main"><span>Total no Pix <span class="g">(5% off)</span></span><b class="num" id="tPix">R$ 0,00</b></div>
+    <div class="two">
+      <div class="field"><label for="cliName">Seu nome</label><input id="cliName" type="text" autocomplete="name" placeholder="Nome"></div>
+      <div class="field"><label for="cliPlace">Bairro da obra</label><input id="cliPlace" type="text" placeholder="Ou: retiro na loja"></div>
     </div>
-    <div class="field">
-      <label for="cliPlace">Bairro para entrega</label>
-      <input id="cliPlace" type="text" placeholder="Ou escreva: retiro na loja">
-    </div>
-    <a class="wa" id="waLink" href="#" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+    <a class="btn wa lg block" id="waLink" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
       Enviar orçamento pelo WhatsApp
     </a>
-    <p class="note" id="waNote"></p>
+    <p class="note" id="waNote">O vendedor confirma estoque, frete e horário de entrega. Orçamento válido por 48h.</p>
   </div>
 </aside>
 
 <script>
-/* ===== Configuração da loja: troque aqui para personalizar ===== */
+/* ===== Configuração da loja: edite aqui para cada cliente ===== */
 const STORE = {
   name: "Depósito Alicerce",
   tagline: "MATERIAIS PARA CONSTRUÇÃO",
-  whatsapp: "",            // ex.: "5511999999999" (com DDI e DDD). Vazio = o WhatsApp pede para escolher o contato
-  dealId: "cimento-cp2",
-  dealPriceCents: 3690
+  whatsapp: "",           // "55" + DDD + número, ex.: "5511999999999". Vazio = o WhatsApp pede o contato
+  phoneDisplay: "(00) 0000-0000",
+  pixOff: 0.05,
+  freeShipping: 50000,    // centavos
+  heroDealId: "cimento-cp2"
 };
 
-/* ===== Ilustrações (SVG, viewBox 160x120) ===== */
 const shadow = (rx = 52) => `<ellipse cx="80" cy="104" rx="${rx}" ry="5" fill="#000" opacity=".13"/>`;
 const svg = (inner) => `<svg viewBox="0 0 160 120" role="img" aria-hidden="true">${inner}</svg>`;
 
@@ -586,199 +944,403 @@ const ART = {
     <rect x="100" y="24" width="12" height="30" rx="5" fill="#b9733a" transform="rotate(35 106 39)"/>`)
 };
 
-/* ===== Catálogo ===== */
+
+const ICONS = {
+  0: '<path d="M6 8h12l-1 13H7z"/><path d="M9 8V5h6v3"/><path d="M8 13h8"/>',
+  1: '<rect x="3" y="5" width="8" height="5"/><rect x="13" y="5" width="8" height="5"/><rect x="8" y="12" width="8" height="5"/><rect x="3" y="12" width="3" height="5"/><rect x="18" y="12" width="3" height="5"/><path d="M3 20h18"/>',
+  2: '<path d="M3 9h7v6H3zM10 11h7a4 4 0 0 1 4 4v6h-4v-6h-7"/><path d="M6 9V5h1"/>',
+  3: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  4: '<rect x="3" y="3" width="15" height="7" rx="2"/><path d="M18 6h3v6h-9v3"/><rect x="10" y="15" width="4" height="7" rx="1"/>',
+  5: '<path d="M12 3 21 8l-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+  6: '<path d="M14.7 6.3a4 4 0 0 0 5 5L12 19l-3-3 7.7-7.7zM9 16l-5 5"/>'
+};
+
 const CATS = ["Básicos", "Alvenaria e estrutura", "Hidráulica", "Elétrica", "Pintura", "Pisos e revestimento", "Ferramentas"];
 
+/* price = preço no cartão; was = preço anterior (ofertas). rank = ordem de mais vendidos */
 const PRODUCTS = [
-  { id: "cimento-cp2", cat: 0, name: "Cimento CP II-F-32", spec: "Uso geral · NBR 16697", unit: "saco 50 kg", price: 3990, sku: "BAS-0101", hot: true, art: () => ART.bag("#5a6b78", "CP II-F-32", "CIMENTO · 50 kg") },
-  { id: "areia-media", cat: 0, name: "Areia média lavada", spec: "Reboco e assentamento", unit: "m³", price: 15900, sku: "BAS-0204", art: () => ART.pile("#d6b37a", "#b48f55") },
-  { id: "brita-1", cat: 0, name: "Pedra britada nº 1", spec: "9,5 a 19 mm · concreto", unit: "m³", price: 16900, sku: "BAS-0211", art: () => ART.pile("#8e9396", "#5f6467") },
-  { id: "cal-ch3", cat: 0, name: "Cal hidratada CH-III", spec: "Para argamassa de reboco", unit: "saco 20 kg", price: 1890, sku: "BAS-0130", art: () => ART.bag("#9aa7ae", "CAL CH-III", "HIDRATADA · 20 kg", "#ecebe6") },
-  { id: "argamassa-ac1", cat: 0, name: "Argamassa colante AC-I", spec: "Cerâmica em área interna", unit: "saco 20 kg", price: 1690, sku: "BAS-0142", art: () => ART.bag("#b8452a", "AC-I", "ARGAMASSA · 20 kg") },
-  { id: "argamassa-ac3", cat: 0, name: "Argamassa colante AC-III", spec: "Porcelanato e área externa", unit: "saco 20 kg", price: 3890, sku: "BAS-0144", art: () => ART.bag("#2e5d4b", "AC-III", "ARGAMASSA · 20 kg") },
+  { id: "cimento-cp2", cat: 0, rank: 1, name: "Cimento CP II-F-32", spec: "Uso geral · NBR 16697", unit: "saco 50 kg", price: 3790, was: 4290, art: () => ART.bag("#5a6b78", "CP II-F-32", "CIMENTO · 50 kg") },
+  { id: "areia-media", cat: 0, rank: 3, name: "Areia média lavada", spec: "Reboco e assentamento", unit: "m³", price: 15900, art: () => ART.pile("#d6b37a", "#b48f55") },
+  { id: "brita-1", cat: 0, rank: 6, name: "Pedra britada nº 1", spec: "9,5 a 19 mm · concreto", unit: "m³", price: 16900, art: () => ART.pile("#8e9396", "#5f6467") },
+  { id: "cal-ch3", cat: 0, rank: 9, name: "Cal hidratada CH-III", spec: "Para argamassa de reboco", unit: "saco 20 kg", price: 1890, art: () => ART.bag("#9aa7ae", "CAL CH-III", "HIDRATADA · 20 kg", "#ecebe6") },
+  { id: "argamassa-ac1", cat: 0, rank: 5, name: "Argamassa colante AC-I", spec: "Cerâmica em área interna", unit: "saco 20 kg", price: 1690, art: () => ART.bag("#b8452a", "AC-I", "ARGAMASSA · 20 kg") },
+  { id: "argamassa-ac3", cat: 0, rank: 14, name: "Argamassa colante AC-III", spec: "Porcelanato e área externa", unit: "saco 20 kg", price: 3490, was: 3990, art: () => ART.bag("#2e5d4b", "AC-III", "ARGAMASSA · 20 kg") },
+  { id: "impermeabilizante", cat: 0, rank: 20, name: "Argamassa impermeabilizante", spec: "Bicomponente · caixa d'água e baldrame", unit: "caixa 18 kg", price: 11900, art: () => ART.bag("#2c6fa3", "IMPERMEAB.", "POLIMÉRICA · 18 kg") },
 
-  { id: "impermeabilizante", cat: 0, name: "Argamassa impermeabilizante", spec: "Bicomponente · caixa d'água e baldrame", unit: "caixa 18 kg", price: 11900, sku: "BAS-0160", art: () => ART.bag("#2c6fa3", "IMPERMEAB.", "POLIMÉRICA · 18 kg") },
+  { id: "tijolo-8f", cat: 1, rank: 2, name: "Tijolo cerâmico 8 furos", spec: "9 × 19 × 19 cm", unit: "unidade", price: 105, art: () => ART.brick() },
+  { id: "bloco-14", cat: 1, rank: 8, name: "Bloco de concreto vedação", spec: "14 × 19 × 39 cm", unit: "unidade", price: 420, art: () => ART.block() },
+  { id: "telha-fibro", cat: 1, rank: 11, name: "Telha ondulada fibrocimento", spec: "2,44 × 1,10 m · 6 mm", unit: "unidade", price: 7490, art: () => ART.roofsheet() },
+  { id: "vergalhao-10", cat: 1, rank: 10, name: "Vergalhão CA-50 10 mm", spec: "3/8\" · barra de 12 m", unit: "barra", price: 5290, art: () => ART.rebar() },
 
-  { id: "tijolo-8f", cat: 1, name: "Tijolo cerâmico 8 furos", spec: "9 × 19 × 19 cm", unit: "unidade", price: 105, sku: "ALV-0301", hot: true, art: () => ART.brick() },
-  { id: "bloco-14", cat: 1, name: "Bloco de concreto vedação", spec: "14 × 19 × 39 cm", unit: "unidade", price: 420, sku: "ALV-0312", art: () => ART.block() },
-  { id: "telha-fibro", cat: 1, name: "Telha ondulada fibrocimento", spec: "2,44 × 1,10 m · 6 mm", unit: "unidade", price: 7490, sku: "ALV-0420", art: () => ART.roofsheet() },
-  { id: "vergalhao-10", cat: 1, name: "Vergalhão CA-50 10 mm", spec: "3/8\" · barra de 12 m", unit: "barra", price: 5290, sku: "ALV-0505", art: () => ART.rebar() },
+  { id: "tubo-esgoto-100", cat: 2, rank: 12, name: "Tubo PVC esgoto 100 mm", spec: "Série normal · NBR 5688", unit: "barra 6 m", price: 8490, art: () => ART.pipe("#ecebe6", "#c9c8c2") },
+  { id: "tubo-soldavel-25", cat: 2, rank: 13, name: "Tubo PVC soldável 25 mm", spec: "Água fria · NBR 5648", unit: "barra 6 m", price: 2790, art: () => ART.pipe("#8a5a36", "#6b4227") },
+  { id: "caixa-1000", cat: 2, rank: 7, name: "Caixa d'água polietileno 1.000 L", spec: "Com tampa · protetor UV", unit: "unidade", price: 44900, was: 49900, art: () => ART.tank() },
 
-  { id: "tubo-esgoto-100", cat: 2, name: "Tubo PVC esgoto 100 mm", spec: "Série normal · NBR 5688", unit: "barra 6 m", price: 8490, sku: "HID-0601", art: () => ART.pipe("#ecebe6", "#c9c8c2") },
-  { id: "tubo-soldavel-25", cat: 2, name: "Tubo PVC soldável 25 mm", spec: "Água fria · NBR 5648", unit: "barra 6 m", price: 2790, sku: "HID-0612", art: () => ART.pipe("#8a5a36", "#6b4227") },
-  { id: "caixa-1000", cat: 2, name: "Caixa d'água polietileno", spec: "Com tampa · 1.000 litros", unit: "unidade", price: 47900, sku: "HID-0650", hot: true, art: () => ART.tank() },
+  { id: "cabo-25", cat: 3, rank: 15, name: "Cabo flexível 2,5 mm² 750 V", spec: "Tomadas de uso geral", unit: "rolo 100 m", price: 25900, art: () => ART.coil("#2c63b8") },
+  { id: "disjuntor-20", cat: 3, rank: 18, name: "Disjuntor DIN monopolar 20 A", spec: "Curva C · 3 kA", unit: "unidade", price: 1690, art: () => ART.breaker() },
+  { id: "tomada-2pt", cat: 3, rank: 19, name: "Tomada 2P+T 10 A com placa", spec: "Padrão NBR 14136", unit: "unidade", price: 1290, art: () => ART.socket() },
 
-  { id: "cabo-25", cat: 3, name: "Cabo flexível 2,5 mm² 750 V", spec: "Tomadas de uso geral", unit: "rolo 100 m", price: 25900, sku: "ELE-0701", art: () => ART.coil("#2c63b8") },
-  { id: "disjuntor-20", cat: 3, name: "Disjuntor DIN monopolar 20 A", spec: "Curva C · 3 kA", unit: "unidade", price: 1690, sku: "ELE-0730", art: () => ART.breaker() },
-  { id: "tomada-2pt", cat: 3, name: "Tomada 2P+T 10 A com placa", spec: "Padrão NBR 14136", unit: "unidade", price: 1290, sku: "ELE-0745", art: () => ART.socket() },
+  { id: "tinta-acrilica", cat: 4, rank: 4, name: "Tinta acrílica fosca branco neve", spec: "Premium · rende até 300 m²/demão", unit: "lata 18 L", price: 29900, was: 34900, art: () => ART.can("#c9c3b5") },
+  { id: "tinta-terracota", cat: 4, rank: 22, name: "Tinta acrílica fosca terracota", spec: "Standard · interno e externo", unit: "lata 18 L", price: 27900, art: () => ART.can("#b5532f") },
+  { id: "massa-corrida", cat: 4, rank: 16, name: "Massa corrida PVA", spec: "Paredes internas", unit: "balde 25 kg", price: 7490, art: () => ART.bag("#7f6aa8", "MASSA PVA", "CORRIDA · 25 kg", "#ecebe6") },
+  { id: "rolo-la", cat: 4, rank: 21, name: "Rolo de lã de carneiro 23 cm", spec: "Com suporte", unit: "unidade", price: 2890, art: () => ART.roller("#e9e1cf") },
 
-  { id: "tinta-acrilica", cat: 4, name: "Tinta acrílica fosca branco neve", spec: "Premium · rende até 380 m²/demão", unit: "lata 18 L", price: 32900, sku: "PIN-0801", hot: true, art: () => ART.can("#c9c3b5") },
-  { id: "tinta-terracota", cat: 4, name: "Tinta acrílica fosca terracota", spec: "Standard · interno e externo", unit: "lata 18 L", price: 27900, sku: "PIN-0805", art: () => ART.can("#b5532f") },
-  { id: "massa-corrida", cat: 4, name: "Massa corrida PVA", spec: "Paredes internas", unit: "balde 25 kg", price: 7490, sku: "PIN-0820", art: () => ART.bag("#7f6aa8", "MASSA PVA", "CORRIDA · 25 kg", "#ecebe6") },
-  { id: "rolo-la", cat: 4, name: "Rolo de lã de carneiro 23 cm", spec: "Com suporte", unit: "unidade", price: 2890, sku: "PIN-0840", art: () => ART.roller("#e9e1cf") },
+  { id: "piso-ceramico", cat: 5, rank: 17, name: "Piso cerâmico 60 × 60 cm", spec: "PEI 4 · acetinado cinza", unit: "m²", price: 3490, art: () => ART.tiles("#cfd2d1", "#b9bdbc") },
+  { id: "porcelanato", cat: 5, rank: 23, name: "Porcelanato polido 80 × 80 cm", spec: "Retificado · bege marfim", unit: "m²", price: 7990, art: () => ART.tiles("#e7dcc8", "#d9ccb4") },
+  { id: "rejunte", cat: 5, rank: 24, name: "Rejunte flexível cinza platina", spec: "Juntas de 2 a 10 mm", unit: "saco 1 kg", price: 990, art: () => ART.bag("#6e7478", "REJUNTE", "FLEXÍVEL · 1 kg", "#ecebe6") },
 
-  { id: "piso-ceramico", cat: 5, name: "Piso cerâmico 60 × 60 cm", spec: "PEI 4 · acetinado cinza", unit: "m²", price: 3490, sku: "PIS-0901", art: () => ART.tiles("#cfd2d1", "#b9bdbc") },
-  { id: "porcelanato", cat: 5, name: "Porcelanato polido 80 × 80 cm", spec: "Retificado · bege marfim", unit: "m²", price: 7990, sku: "PIS-0910", art: () => ART.tiles("#e7dcc8", "#d9ccb4") },
-  { id: "rejunte", cat: 5, name: "Rejunte flexível cinza platina", spec: "Juntas de 2 a 10 mm", unit: "saco 1 kg", price: 990, sku: "PIS-0930", art: () => ART.bag("#6e7478", "REJUNTE", "FLEXÍVEL · 1 kg", "#ecebe6") },
-
-  { id: "carrinho", cat: 6, name: "Carrinho de mão 60 L", spec: "Pneu com câmara", unit: "unidade", price: 26900, sku: "FER-1001", art: () => ART.barrow() },
-  { id: "pa", cat: 6, name: "Pá quadrada com cabo", spec: "Cabo de madeira 71 cm", unit: "unidade", price: 5490, sku: "FER-1010", art: () => ART.shovel() },
-  { id: "trena", cat: 6, name: "Trena emborrachada 5 m", spec: "Fita de aço 19 mm", unit: "unidade", price: 2490, sku: "FER-1022", art: () => ART.tape() },
-  { id: "colher", cat: 6, name: "Colher de pedreiro 8\"", spec: "Aço carbono · cabo de madeira", unit: "unidade", price: 2190, sku: "FER-1030", art: () => ART.trowel() }
+  { id: "carrinho", cat: 6, rank: 25, name: "Carrinho de mão 60 L", spec: "Pneu com câmara", unit: "unidade", price: 26900, art: () => ART.barrow() },
+  { id: "pa", cat: 6, rank: 26, name: "Pá quadrada com cabo", spec: "Cabo de madeira 71 cm", unit: "unidade", price: 5490, art: () => ART.shovel() },
+  { id: "trena", cat: 6, rank: 27, name: "Trena emborrachada 5 m", spec: "Fita de aço 19 mm", unit: "unidade", price: 2490, art: () => ART.tape() },
+  { id: "colher", cat: 6, rank: 28, name: "Colher de pedreiro 8\"", spec: "Aço carbono · cabo de madeira", unit: "unidade", price: 2190, art: () => ART.trowel() }
 ];
+
+const KITS = [
+  { id: "kit-reboco", use: "Parede", name: "Reboco 40 m²", off: .08, items: [["cimento-cp2", 3], ["cal-ch3", 6], ["areia-media", 1]] },
+  { id: "kit-contrapiso", use: "Piso", name: "Contrapiso 15 m²", off: .08, items: [["cimento-cp2", 6], ["areia-media", 1]] },
+  { id: "kit-piso", use: "Acabamento", name: "Assentar piso 20 m²", off: .07, items: [["piso-ceramico", 22], ["argamassa-ac1", 5], ["rejunte", 4]] },
+  { id: "kit-pintura", use: "Pintura", name: "Pintura de casa 120 m²", off: .10, items: [["tinta-acrilica", 1], ["massa-corrida", 2], ["rolo-la", 2]] }
+];
+
 const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
 const artCache = {};
 const artOf = (p) => (artCache[p.id] ??= p.art());
+const $ = (id) => document.getElementById(id);
+const brl = (c) => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const pix = (c) => Math.round(c * (1 - STORE.pixOff));
+const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const offPct = (p) => (p.was ? Math.round((1 - p.price / p.was) * 100) : 0);
+const waUrl = (text) => `https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(text)}`;
+const icon = (i) => `<svg class="i" viewBox="0 0 24 24">${ICONS[i]}</svg>`;
 
 /* ===== Estado ===== */
-const KEY = "alicerce-orcamento";
+const KEY = "alicerce-orcamento-v2";
 let cart = {};
 try { cart = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch { cart = {}; }
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch {} };
-let activeCat = -1, query = "";
+let activeCat = -1, query = "", sortBy = "rel";
 
-const brl = (c) => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-const priceOf = (p) => (p.id === STORE.dealId ? STORE.dealPriceCents : p.price);
-const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
-const $ = (id) => document.getElementById(id);
-
-function setQty(id, q) {
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("on");
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("on"), 1800);
+}
+function setQty(id, q, silent) {
   q = Math.max(0, Math.min(99999, Math.round(Number(q) || 0)));
+  const had = cart[id] || 0;
   if (q) cart[id] = q; else delete cart[id];
-  save(); renderGrid(); renderCart();
+  save(); renderProducts(); renderCart();
+  if (!silent && q > had) toast(`${byId[id].name} adicionado ao orçamento`);
+}
+function addMany(list, label) {
+  for (const [id, q] of list) cart[id] = (cart[id] || 0) + q;
+  save(); renderProducts(); renderCart(); toast(`${label} adicionado ao orçamento`);
 }
 
-/* ===== Render ===== */
+/* ===== Componentes ===== */
 function stepper(id, q) {
   return `<div class="stepper" data-id="${id}">
     <button type="button" data-d="-1" aria-label="Diminuir">−</button>
-    <input type="number" id="q-${id}" value="${q}" min="0" inputmode="numeric" aria-label="Quantidade">
+    <input type="number" id="q-${id}-${stepper.n++}" value="${q}" min="0" inputmode="numeric" aria-label="Quantidade de ${byId[id].name}">
     <button type="button" data-d="1" aria-label="Aumentar">+</button></div>`;
 }
+stepper.n = 0;
 
-function renderChips() {
-  const counts = CATS.map((_, i) => PRODUCTS.filter(p => p.cat === i).length);
-  $("chips").innerHTML = [`<button class="chip" data-c="-1" aria-pressed="${activeCat === -1}">Todos<span class="n">${PRODUCTS.length}</span></button>`]
-    .concat(CATS.map((c, i) => `<button class="chip" data-c="${i}" aria-pressed="${activeCat === i}">${c}<span class="n">${counts[i]}</span></button>`)).join("");
+function priceBlock(p) {
+  const inst = p.price >= 30000 ? `ou 10x de ${brl(Math.ceil(p.price / 10))} sem juros` : `${brl(p.price)} no cartão`;
+  return `<div class="pricebox">
+    ${p.was ? `<div class="was num">de ${brl(p.was)}</div>` : ""}
+    <div class="pix"><b class="num">${brl(pix(p.price))}</b><span>no Pix</span></div>
+    <div class="card-p num">${inst}</div></div>`;
 }
 
-function renderGrid() {
-  const focused = document.activeElement && document.activeElement.id;
+function card(p) {
+  const q = cart[p.id] || 0, off = offPct(p);
+  return `<article class="card">
+    <div class="art">${artOf(p)}<div class="flag">${off ? `<span class="off">−${off}%</span>` : ""}${p.rank <= 4 && !off ? `<span class="hot">Mais vendido</span>` : ""}</div></div>
+    <div class="body">
+      <span class="meta">${CATS[p.cat]}</span>
+      <h3>${p.name}</h3>
+      <span class="spec">${p.spec} · ${p.unit}</span>
+      ${priceBlock(p)}
+      <div class="add">${q ? stepper(p.id, q) + `<div class="added">✓ No orçamento</div>` : `<button class="btn block" type="button" data-add="${p.id}">Adicionar</button>`}</div>
+    </div></article>`;
+}
+
+/* ===== Render ===== */
+function renderNav() {
+  const counts = CATS.map((_, i) => PRODUCTS.filter(p => p.cat === i).length);
+  $("catNav").innerHTML = CATS.map((c, i) => `<button type="button" data-c="${i}">${icon(i)}${c}</button>`).join("");
+  $("sCat").innerHTML = `<option value="-1">Todos os setores</option>` + CATS.map((c, i) => `<option value="${i}">${c}</option>`).join("");
+  const opts = [[-1, "Todos", PRODUCTS.length], ...CATS.map((c, i) => [i, c, counts[i]])];
+  $("sideList").innerHTML = opts.map(([i, c, n]) => `<button type="button" data-c="${i}" aria-pressed="${activeCat === i}">${c}<span class="num">${n}</span></button>`).join("");
+  $("mChips").innerHTML = opts.map(([i, c]) => `<button type="button" data-c="${i}" aria-pressed="${activeCat === i}">${c}</button>`).join("");
+  $("sCat").value = String(activeCat);
+}
+
+function renderProducts() {
+  const focused = document.activeElement && document.activeElement.closest && document.activeElement.closest(".stepper");
+  const fid = focused && focused.dataset.id, inGrid = focused && focused.closest("#grid") ? "grid" : focused && focused.closest("#dealsRow") ? "dealsRow" : null;
+  stepper.n = 0;
+  const deals = PRODUCTS.filter(p => p.was).sort((a, b) => a.rank - b.rank).slice(0, 4);
+  $("dealsRow").innerHTML = deals.map(card).join("");
+
   const q = norm(query.trim());
-  const list = PRODUCTS.filter(p => (activeCat < 0 || p.cat === activeCat) &&
-    (!q || norm(`${p.name} ${p.spec} ${CATS[p.cat]} ${p.sku}`).includes(q)));
-  $("count").textContent = `${list.length} ${list.length === 1 ? "produto" : "produtos"}`;
-  $("grid").innerHTML = list.length ? list.map(p => {
-    const q = cart[p.id] || 0;
-    const deal = p.id === STORE.dealId;
-    return `<article class="card">
-      <div class="art">${artOf(p)}${deal ? `<span class="badge">Oferta</span>` : p.hot ? `<span class="badge">Mais vendido</span>` : ""}</div>
-      <div class="body">
-        <span class="sku">${p.sku}</span>
-        <h3>${p.name}</h3>
-        <span class="spec">${p.spec}</span>
-        <div class="buy">
-          <div class="price">${brl(priceOf(p))}<small>por ${p.unit}</small></div>
-          ${q ? stepper(p.id, q) : `<button class="btn" type="button" data-add="${p.id}">Adicionar</button>`}
-        </div>
+  let list = PRODUCTS.filter(p => (activeCat < 0 || p.cat === activeCat) &&
+    (!q || norm(`${p.name} ${p.spec} ${p.unit} ${CATS[p.cat]}`).includes(q)));
+  const S = { rel: (a, b) => a.rank - b.rank, asc: (a, b) => a.price - b.price, desc: (a, b) => b.price - a.price, off: (a, b) => offPct(b) - offPct(a) || a.rank - b.rank };
+  list.sort(S[sortBy]);
+  $("count").innerHTML = `<b>${list.length}</b> ${list.length === 1 ? "produto" : "produtos"}${activeCat >= 0 ? ` em ${CATS[activeCat]}` : ""}${q ? ` para “${query.trim().replace(/[<>&"]/g, "")}”` : ""}`;
+  $("grid").innerHTML = list.length ? list.map(card).join("") :
+    `<div class="empty"><b>Não encontramos “${query.trim().replace(/[<>&"]/g, "")}” no catálogo online.</b><br>Temos mais de 3 mil itens na loja. Pergunte ao vendedor.<br><a class="btn wa" href="${waUrl(`Olá! Vocês têm ${query.trim()}?`)}" target="_blank" rel="noopener">Perguntar no WhatsApp</a></div>`;
+
+  if (fid && inGrid) {
+    const el = document.querySelector(`#${inGrid} .stepper[data-id="${fid}"] input`);
+    if (el) { el.focus(); }
+  }
+}
+
+function renderKits() {
+  $("kitsRow").innerHTML = KITS.map(k => {
+    const full = k.items.reduce((s, [id, q]) => s + byId[id].price * q, 0);
+    const kit = Math.round(full * (1 - k.off));
+    return `<article class="kit">
+      <div class="kit-top"><span class="save">−${Math.round(k.off * 100)}%</span><span class="use">${k.use}</span><h3>${k.name}</h3></div>
+      <ul>${k.items.map(([id, q]) => `<li><span class="q num">${q}×</span><span>${byId[id].name}<small>${byId[id].unit}</small></span></li>`).join("")}</ul>
+      <div class="foot">
+        <div class="was num">Avulso <s>${brl(pix(full))}</s></div>
+        <b class="num">${brl(pix(kit))}</b><span class="card-p" style="font-size:13px;color:var(--muted)">no Pix · economia de ${brl(pix(full) - pix(kit))}</span>
+        <button class="btn block" type="button" data-kit="${k.id}">Adicionar kit</button>
       </div></article>`;
-  }).join("") : `<p class="empty">Nenhum produto encontrado para “${query.replace(/[<>&]/g, "")}”. Pergunte no WhatsApp: temos mais de 3 mil itens na loja.</p>`;
-  if (focused && focused.startsWith("q-") && $(focused)) { const el = $(focused); el.focus(); el.select(); }
+  }).join("");
+}
+
+function kitCredit() {
+  /* desconto de kit é aplicado se todas as quantidades do kit estão no orçamento */
+  let credit = 0;
+  const left = { ...cart };
+  for (const k of KITS) {
+    while (k.items.every(([id, q]) => (left[id] || 0) >= q)) {
+      const full = k.items.reduce((s, [id, q]) => s + byId[id].price * q, 0);
+      credit += Math.round(full * k.off);
+      for (const [id, q] of k.items) left[id] -= q;
+    }
+  }
+  return credit;
+}
+
+function totals() {
+  const ids = Object.keys(cart).filter(id => byId[id]);
+  const gross = ids.reduce((s, id) => s + cart[id] * byId[id].price, 0);
+  const credit = kitCredit();
+  const card = gross - credit;
+  return { ids, gross, credit, card, pix: pix(card), units: ids.reduce((s, id) => s + cart[id], 0) };
 }
 
 function renderCart() {
-  const ids = Object.keys(cart).filter(id => byId[id]);
-  const units = ids.reduce((s, id) => s + cart[id], 0);
-  const total = ids.reduce((s, id) => s + cart[id] * priceOf(byId[id]), 0);
-  $("qbar").classList.toggle("on", ids.length > 0);
-  $("qItems").textContent = `${ids.length} ${ids.length === 1 ? "produto" : "produtos"} · ${units} un`;
-  $("qTotal").textContent = brl(total);
-  $("sTotal").textContent = brl(total);
-  $("lines").innerHTML = ids.length ? ids.map(id => {
+  const t = totals();
+  $("hCount").hidden = !t.ids.length; $("hCount").textContent = t.ids.length;
+  $("qbarIn").innerHTML = t.ids.length
+    ? `<div class="sum"><span class="num">${t.ids.length} ${t.ids.length === 1 ? "produto" : "produtos"} · <span class="pixl">${brl(t.pix)} no Pix</span></span><b class="num">${brl(t.card)}</b></div>
+       <button class="btn" type="button" data-open>Ver orçamento</button>`
+    : `<div class="sum hint"><b>Monte seu orçamento</b> e envie pelo WhatsApp em 1 clique.</div>
+       <a class="btn wa" href="${waUrl(`Olá, ${STORE.name}! Gostaria de um orçamento.`)}" target="_blank" rel="noopener">WhatsApp</a>`;
+  $("tCard").textContent = brl(t.card);
+  $("tPix").textContent = brl(t.pix);
+  const missing = STORE.freeShipping - t.card;
+  $("shipBar").innerHTML = (missing > 0
+    ? `Faltam <b class="num">${brl(missing)}</b> para frete grátis na Zona 1`
+    : `<b>Frete grátis</b> liberado para a Zona 1`) +
+    `<div class="track"><div class="fill" style="width:${Math.min(100, t.card / STORE.freeShipping * 100)}%"></div></div>` +
+    (t.credit ? `<div style="margin-top:6px">Desconto de kit aplicado: <b class="num">−${brl(t.credit)}</b></div>` : "");
+  stepper.n = 1000;
+  $("qlines").innerHTML = t.ids.length ? t.ids.map(id => {
     const p = byId[id];
-    return `<li class="line"><div class="art">${artOf(p)}</div>
-      <div><div class="nm">${p.name}</div><div class="sub">${brl(priceOf(p))} / ${p.unit}</div></div>
-      <div class="right">${stepper(id, cart[id])}<span class="sub">${brl(cart[id] * priceOf(p))}</span></div></li>`;
-  }).join("") : `<li class="note" style="padding:20px 0">Seu orçamento está vazio. Toque em “Adicionar” nos produtos.</li>`;
-  updateWa(ids, total);
+    return `<li class="qline"><div class="art">${artOf(p)}</div>
+      <div><div class="nm">${p.name}</div><div class="sub num">${brl(p.price)} / ${p.unit}</div></div>
+      <div>${stepper(id, cart[id])}<div class="lt num">${brl(cart[id] * p.price)}</div></div></li>`;
+  }).join("") : `<li class="qempty">Seu orçamento está vazio.<br>Adicione produtos, kits ou use a calculadora.</li>`;
+  updateWa(t);
 }
 
-function updateWa(ids = Object.keys(cart).filter(id => byId[id]), total) {
-  if (total === undefined) total = ids.reduce((s, id) => s + cart[id] * priceOf(byId[id]), 0);
+function updateWa(t = totals()) {
   const name = $("cliName").value.trim(), place = $("cliPlace").value.trim();
-  const msg = [
-    `Olá, ${STORE.name}! Quero um orçamento:`, "",
-    ...ids.map(id => `• ${cart[id]}× ${byId[id].name} (${byId[id].unit}) = ${brl(cart[id] * priceOf(byId[id]))}`),
-    "", `Total estimado: ${brl(total)}`,
-    name ? `Nome: ${name}` : null, place ? `Entrega: ${place}` : null
-  ].filter(l => l !== null).join("\n");
-  $("waLink").href = `https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(msg)}`;
-  $("waNote").textContent = STORE.whatsapp
-    ? "Abre o WhatsApp com a lista pronta. O vendedor confirma estoque, frete e prazo."
-    : "Abre o WhatsApp com a lista pronta para você escolher o contato da loja.";
+  const lines = [
+    `Olá, ${STORE.name}! Quero confirmar este orçamento:`, "",
+    ...t.ids.map(id => `• ${cart[id]}× ${byId[id].name} (${byId[id].unit})`), "",
+    t.credit ? `Desconto de kit: −${brl(t.credit)}` : null,
+    `Total no cartão: ${brl(t.card)}`,
+    `Total no Pix: ${brl(t.pix)}`,
+    name ? `Nome: ${name}` : null,
+    place ? `Entrega: ${place}` : null
+  ].filter(l => l !== null);
+  $("waLink").href = waUrl(lines.join("\n"));
 }
 
-function renderDeal() {
-  const p = byId[STORE.dealId];
-  $("dealArt").innerHTML = artOf(p);
-  $("dealName").textContent = `${p.name} · ${p.unit}`;
-  $("dealWas").textContent = `de ${brl(p.price)}`;
-  $("dealNow").innerHTML = `${brl(STORE.dealPriceCents)} <small>à vista</small>`;
+/* ===== Hero ===== */
+function renderHero() {
+  const p = byId[STORE.heroDealId];
+  const [r, c] = brl(pix(p.price)).replace("R$", "").trim().split(",");
+  $("tagName").textContent = `${p.name} · ${p.unit}`;
+  $("tagPrice").innerHTML = `<sup>R$</sup>${r},<span style="font-size:.6em">${c}</span>`;
+  $("tagSub").textContent = `no Pix · de ${brl(p.was)}`;
+  const nest = (s, x, y, w) => s.replace("<svg ", `<svg x="${x}" y="${y}" width="${w}" height="${w * .75}" `);
+  $("collage").innerHTML = `<svg viewBox="0 0 400 290" aria-hidden="true">
+    <ellipse cx="200" cy="262" rx="196" ry="14" fill="#000" opacity=".28"/>
+    ${nest(ART.tank(), 196, 0, 204)}
+    ${nest(ART.brick(), -6, 112, 220)}
+    ${nest(ART.can("#c9c3b5"), 222, 126, 180)}
+    ${nest(ART.bag("#5a6b78", "CP II-F-32", "CIMENTO · 50 kg"), 74, 30, 262)}
+  </svg>`;
+}
+
+/* ===== Contagem regressiva (até sábado 13h) ===== */
+function deadline() {
+  const now = new Date(), d = new Date(now);
+  d.setHours(13, 0, 0, 0);
+  d.setDate(d.getDate() + ((6 - d.getDay() + 7) % 7));
+  if (d <= now) d.setDate(d.getDate() + 7);
+  return d;
+}
+const DL = deadline();
+function tick() {
+  let s = Math.max(0, Math.floor((DL - new Date()) / 1000));
+  const d = Math.floor(s / 86400); s %= 86400;
+  const h = Math.floor(s / 3600); s %= 3600;
+  const m = Math.floor(s / 60); s %= 60;
+  const pad = (n) => String(n).padStart(2, "0");
+  $("countdown").innerHTML = `<span>Termina em</span>` +
+    [[d, "dias"], [h, "horas"], [m, "min"], [s, "seg"]].map(([v, l]) => `<span class="box">${pad(v)}<small>${l}</small></span>`).join("");
+  $("heroTimer").textContent = d ? `${d}d ${pad(h)}h ${pad(m)}min` : `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
 /* ===== Calculadora ===== */
-const RATE = { "tijolo-8f": 25, "bloco-14": 12.5 };
-function calc() {
-  const w = parseFloat($("cW").value) || 0, h = parseFloat($("cH").value) || 0, t = $("cT").value;
-  const area = w * h, qty = Math.ceil(area * RATE[t] * 1.1);
-  $("cOut").textContent = `${qty.toLocaleString("pt-BR")} un`;
-  $("cSub").textContent = `${area.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} m² · ${brl(qty * priceOf(byId[t]))}`;
-  return { t, qty };
+const CALC = {
+  parede: {
+    fields: [["w", "Comprimento (m)", 6], ["h", "Altura (m)", 2.8], ["v", "Vãos (m²)", 1.6, "Portas e janelas"],
+      ["t", "Material", "tijolo-8f", null, [["tijolo-8f", "Tijolo 8 furos · 25 un/m²"], ["bloco-14", "Bloco de concreto · 12,5 un/m²"]]]],
+    run: (f) => {
+      const area = Math.max(0, f.w * f.h - f.v), rate = f.t === "bloco-14" ? 12.5 : 25;
+      const un = Math.ceil(area * rate * 1.1), cim = Math.ceil(area * .05), cal = Math.ceil(area * .09), areia = Math.max(1, Math.ceil(area * .015));
+      return { area, items: [[f.t, un], ["cimento-cp2", cim], ["cal-ch3", cal], ["areia-media", areia]], note: `${fmt(area)} m² de parede · 10% de perda · assentamento em traço 1:2:8` };
+    }
+  },
+  contrapiso: {
+    fields: [["a", "Área (m²)", 15], ["e", "Espessura (cm)", 5]],
+    run: (f) => {
+      const vol = f.a * f.e / 100;
+      return { area: f.a, items: [["cimento-cp2", Math.ceil(vol * 7)], ["areia-media", Math.max(1, Math.ceil(vol * 1.15))]], note: `${fmt(vol)} m³ de argamassa · traço 1:4 (350 kg de cimento/m³)` };
+    }
+  },
+  pintura: {
+    fields: [["a", "Área de parede (m²)", 120], ["d", "Demãos", 2]],
+    run: (f) => {
+      const latas = Math.ceil(f.a * f.d / 250), massa = Math.ceil(f.a / 60);
+      return { area: f.a, items: [["tinta-acrilica", latas], ["massa-corrida", massa], ["rolo-la", 1]], note: `Rendimento médio de 250 m²/demão por lata em parede selada` };
+    }
+  },
+  piso: {
+    fields: [["a", "Área (m²)", 20], ["t", "Revestimento", "piso-ceramico", null, [["piso-ceramico", "Cerâmico 60 × 60"], ["porcelanato", "Porcelanato 80 × 80"]]]],
+    run: (f) => {
+      const m2 = Math.ceil(f.a * 1.1), arg = f.t === "porcelanato" ? "argamassa-ac3" : "argamassa-ac1";
+      return { area: f.a, items: [[f.t, m2], [arg, Math.ceil(f.a * 5 / 20)], ["rejunte", Math.ceil(f.a / 5)]], note: `10% de perda · argamassa a 5 kg/m² com dupla colagem` };
+    }
+  }
+};
+const fmt = (n) => n.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+let calcTab = "parede", lastCalc = null;
+
+function renderCalcFields() {
+  $("calcFields").innerHTML = CALC[calcTab].fields.map(([k, label, def, hint, opts]) => {
+    const id = `c-${calcTab}-${k}`;
+    return opts
+      ? `<div class="field full"><label for="${id}">${label}</label><select id="${id}" data-k="${k}">${opts.map(([v, l]) => `<option value="${v}"${v === def ? " selected" : ""}>${l}</option>`).join("")}</select></div>`
+      : `<div class="field"><label for="${id}">${label}</label><input id="${id}" data-k="${k}" type="number" min="0" step="0.1" value="${def}" inputmode="decimal"${hint ? ` title="${hint}"` : ""}></div>`;
+  }).join("");
+  runCalc();
+}
+function runCalc() {
+  const f = {};
+  for (const el of $("calcFields").querySelectorAll("[data-k]")) f[el.dataset.k] = el.tagName === "SELECT" ? el.value : Math.max(0, parseFloat(el.value) || 0);
+  lastCalc = CALC[calcTab].run(f);
+  lastCalc.items = lastCalc.items.filter(([, q]) => q > 0);
+  const total = lastCalc.items.reduce((s, [id, q]) => s + byId[id].price * q, 0);
+  $("calcOut").innerHTML = lastCalc.items.map(([id, q]) => `<div class="big num"><span>${q.toLocaleString("pt-BR")}</span> <small style="font-family:var(--f-body);font-size:15px;color:#fff;font-weight:600">${byId[id].unit === "unidade" ? "un" : byId[id].unit} · ${byId[id].name}</small></div>`).join("") +
+    `<small>${lastCalc.note} · ${brl(pix(total))} no Pix</small>`;
+}
+
+/* ===== Mapa de entrega ===== */
+function renderMap() {
+  $("map").innerHTML = `<svg viewBox="0 0 400 300" role="img" aria-label="Zonas de entrega em anéis a partir da loja">
+    <rect width="400" height="300" rx="8" fill="#eaeff3"/>
+    <g stroke="#d3dce4" stroke-width="10" fill="none" stroke-linecap="round">
+      <path d="M-10 210 C80 190 140 120 230 110 S360 60 410 70"/><path d="M120 -10 C140 80 170 160 160 310"/><path d="M260 310 C250 220 290 160 410 150"/>
+    </g>
+    <circle cx="200" cy="150" r="138" fill="#9fb3c8" fill-opacity=".28" stroke="#9fb3c8" stroke-width="2" stroke-dasharray="6 5"/>
+    <circle cx="200" cy="150" r="88" fill="#2f5d8a" fill-opacity=".22" stroke="#2f5d8a" stroke-width="2"/>
+    <circle cx="200" cy="150" r="42" fill="#f26a1b" fill-opacity=".28" stroke="#f26a1b" stroke-width="2"/>
+    <g font-family="Barlow, sans-serif" font-weight="700" font-size="13" fill="#0b2239">
+      <text x="200" y="118" text-anchor="middle">Zona 1</text><text x="200" y="74" text-anchor="middle">Zona 2</text><text x="200" y="26" text-anchor="middle">Zona 3</text>
+    </g>
+    <g transform="translate(200 150)"><circle r="14" fill="#0b2239"/><path d="M0 -7 7 -1H-7Z" fill="#ffd23f"/><rect x="-6" y="0" width="12" height="7" fill="#fff"/></g>
+  </svg>`;
 }
 
 /* ===== Eventos ===== */
-$("chips").addEventListener("click", e => {
-  const b = e.target.closest("[data-c]"); if (!b) return;
-  activeCat = Number(b.dataset.c); renderChips(); renderGrid();
-});
-$("q").addEventListener("input", e => { query = e.target.value; renderGrid(); });
-
-function onStep(e) {
+function pickCat(c) {
+  activeCat = c; renderNav(); renderProducts();
+}
+document.addEventListener("click", (e) => {
+  const c = e.target.closest("[data-c]");
+  if (c) { pickCat(Number(c.dataset.c)); if (c.closest("#catNav")) $("catalogo").scrollIntoView(); return; }
   const add = e.target.closest("[data-add]");
   if (add) { setQty(add.dataset.add, 1); return; }
-  const b = e.target.closest(".stepper button"); if (!b) return;
-  const id = b.parentElement.dataset.id;
-  setQty(id, (cart[id] || 0) + Number(b.dataset.d));
-}
-function onType(e) {
-  const s = e.target.closest(".stepper"); if (!s || e.target.tagName !== "INPUT") return;
-  setQty(s.dataset.id, e.target.value);
-}
-for (const el of [$("grid"), $("lines")]) { el.addEventListener("click", onStep); el.addEventListener("change", onType); }
-
-$("dealAdd").addEventListener("click", () => setQty(STORE.dealId, (cart[STORE.dealId] || 0) + 1));
-$("calcForm").addEventListener("input", calc);
-$("calcForm").addEventListener("submit", e => {
-  e.preventDefault();
-  const { t, qty } = calc(); if (qty) setQty(t, (cart[t] || 0) + qty);
+  const st = e.target.closest(".stepper button");
+  if (st) { const id = st.parentElement.dataset.id; setQty(id, (cart[id] || 0) + Number(st.dataset.d), true); return; }
+  const kit = e.target.closest("[data-kit]");
+  if (kit) { const k = KITS.find(x => x.id === kit.dataset.kit); addMany(k.items, `Kit ${k.name}`); return; }
+  if (e.target.closest("[data-open]")) openSheet(true);
 });
+document.addEventListener("change", (e) => {
+  const s = e.target.closest(".stepper");
+  if (s && e.target.tagName === "INPUT") setQty(s.dataset.id, e.target.value, true);
+});
+$("searchForm").addEventListener("submit", (e) => { e.preventDefault(); $("catalogo").scrollIntoView(); });
+$("q").addEventListener("input", (e) => { query = e.target.value; renderProducts(); });
+$("sCat").addEventListener("change", (e) => pickCat(Number(e.target.value)));
+$("sort").addEventListener("change", (e) => { sortBy = e.target.value; renderProducts(); });
+
+$("calcTabs").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-t]"); if (!b) return;
+  calcTab = b.dataset.t;
+  for (const x of $("calcTabs").children) x.setAttribute("aria-selected", String(x === b));
+  renderCalcFields();
+});
+$("calcForm").addEventListener("input", runCalc);
+$("calcForm").addEventListener("submit", (e) => { e.preventDefault(); runCalc(); if (lastCalc.items.length) addMany(lastCalc.items, "Cálculo"); });
 
 function openSheet(open) {
   $("sheet").hidden = !open; $("sheetBg").hidden = !open;
-  if (open) $("sheetClose").focus(); else $("qOpen").focus();
+  document.body.style.overflow = open ? "hidden" : "";
+  if (open) $("sheetClose").focus();
 }
-$("qOpen").addEventListener("click", () => openSheet(true));
+$("openQuote2").addEventListener("click", () => openSheet(true));
 $("sheetClose").addEventListener("click", () => openSheet(false));
 $("sheetBg").addEventListener("click", () => openSheet(false));
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("sheet").hidden) openSheet(false); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("sheet").hidden) openSheet(false); });
 $("cliName").addEventListener("input", () => updateWa());
 $("cliPlace").addEventListener("input", () => updateWa());
 
 /* ===== Init ===== */
 document.title = STORE.name;
-$("storeName").firstChild.textContent = STORE.name;
-$("storeTag").textContent = STORE.tagline;
-renderChips(); renderGrid(); renderCart(); renderDeal(); calc();
+for (const id of ["brandName", "brandName2"]) $(id).textContent = STORE.name;
+$("brandTag").textContent = STORE.tagline;
+$("phoneTxt").textContent = STORE.phoneDisplay;
+$("heroWa").href = waUrl(`Olá, ${STORE.name}! Preciso de ajuda com um orçamento.`);
+$("sideWa").href = waUrl(`Olá, ${STORE.name}! Vou mandar a lista de material da minha obra.`);
+$("closeWa").href = waUrl(`Olá, ${STORE.name}! Vou mandar a lista de material da minha obra.`);
+$("proWa").href = waUrl(`Olá, ${STORE.name}! Quero fazer o cadastro profissional.`);
+renderNav(); renderHero(); renderKits(); renderProducts(); renderCart(); renderCalcFields(); renderMap();
+tick(); setInterval(tick, 1000);
 </script>
 
 </body>

@@ -4,9 +4,10 @@ Página estática, sem build e sem dependências (só Google Fonts). Abra `index
 
 - `catalogo.html`: fonte da página (sem `<html>/<head>`), usada na publicação como Artifact.
 - `index.html`: mesma página embrulhada em documento completo, pronta para hospedar.
+- `estudo.html`: estudo de cor (60-30-10, harmonia, contraste WCAG), leitura em Z e funil, para apresentar ao lojista.
 
 ## Personalizar para uma loja
 
-No `<script>`, edite o objeto `STORE` (nome, slogan, WhatsApp com DDI+DDD, produto em oferta e preço) e a lista `PRODUCTS` (nome, unidade, preço em centavos). Depois de editar `catalogo.html`, regenere o `index.html` ou edite os dois.
+No `<script>`, edite o objeto `STORE` (nome, slogan, WhatsApp com DDI+DDD, telefone, desconto Pix, valor do frete grátis, produto da oferta), a lista `PRODUCTS` (preço no cartão em centavos; `was` = preço anterior para entrar em Ofertas) e `KITS`. Depois de editar `catalogo.html`, regenere o `index.html` ou edite os dois.
 
 Imagens são ilustrações SVG geradas no próprio código (sem fotos de terceiros, sem problema de direito de imagem).
