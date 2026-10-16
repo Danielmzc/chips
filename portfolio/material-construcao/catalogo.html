@@ -1,0 +1,774 @@
+<title>Depósito Alicerce</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: faixa "planta baixa" no topo, filtros por setor da loja, grade de produtos e orçamento em gaveta inferior */
+:root {
+  --bg: #eef0f0;
+  --surface: #ffffff;
+  --tile: #e1e6e6;
+  --ink: #1b2225;
+  --muted: #59666b;
+  --line: #d3d9da;
+  --accent: #d9530c;
+  --accent-ink: #ffffff;
+  --accent-soft: #fbe3d4;
+  --deep: #17384a;
+  --deep-ink: #e9f1f4;
+  --grid: rgba(233, 241, 244, .08);
+  --ok: #1f7a4d;
+
+  --f-display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --f-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111517; --surface: #1a2023; --tile: #232b2f; --ink: #e7ecec; --muted: #98a5a9;
+    --line: #2d363a; --accent: #ff7a33; --accent-ink: #1a0d05; --accent-soft: #3a2116;
+    --deep: #0e2633; --deep-ink: #dbe8ee; --grid: rgba(219, 232, 238, .06); --ok: #4cc28a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111517; --surface: #1a2023; --tile: #232b2f; --ink: #e7ecec; --muted: #98a5a9;
+  --line: #2d363a; --accent: #ff7a33; --accent-ink: #1a0d05; --accent-soft: #3a2116;
+  --deep: #0e2633; --deep-ink: #dbe8ee; --grid: rgba(219, 232, 238, .06); --ok: #4cc28a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 15px; line-height: 1.5;
+  padding-bottom: 88px;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 30; background: var(--surface);
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Header */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--surface); border-bottom: 1px solid var(--line);
+}
+.top .wrap { display: flex; align-items: center; gap: 16px; padding-block: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); min-width: 0; }
+.brand-mark { width: 36px; height: 36px; flex: none; }
+.brand-name {
+  font-family: var(--f-display); font-weight: 850; font-stretch: 112%;
+  font-size: 18px; letter-spacing: .02em; text-transform: uppercase; line-height: 1;
+}
+.brand-name small {
+  display: block; font-family: var(--f-mono); font-weight: 400; font-stretch: 100%;
+  font-size: 10.5px; letter-spacing: .08em; color: var(--muted); margin-top: 4px;
+}
+.search { flex: 1; display: flex; justify-content: flex-end; min-width: 0; }
+.search input {
+  width: 100%; max-width: 340px; padding: 9px 12px 9px 36px;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%237d898d' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: 11px center;
+}
+.search input::placeholder { color: var(--muted); }
+
+/* Hero */
+.hero {
+  background-color: var(--deep); color: var(--deep-ink);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.hero .wrap {
+  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 32px; padding-block: 40px 36px; align-items: center;
+}
+.eyebrow {
+  font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  opacity: .75; margin: 0 0 12px;
+}
+.hero h1 {
+  font-weight: 900; font-stretch: 120%; text-transform: uppercase;
+  font-size: clamp(30px, 5.2vw, 56px); line-height: .98; letter-spacing: -.005em;
+}
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p.lead { max-width: 52ch; margin: 16px 0 0; font-size: 16px; opacity: .88; }
+.perks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; padding: 0; list-style: none; }
+.perks li {
+  display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600;
+  border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 6px 12px 6px 10px;
+}
+.perks svg { width: 16px; height: 16px; flex: none; }
+
+.deal {
+  background: var(--surface); color: var(--ink); border-radius: 10px;
+  display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 16px; align-items: center;
+  padding: 16px; box-shadow: 0 18px 40px -20px rgba(0,0,0,.55);
+}
+.deal .art { background: var(--tile); border-radius: 8px; aspect-ratio: 4/3; max-width: 100%; }
+.deal .tag {
+  display: inline-block; font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; background: var(--accent); color: var(--accent-ink);
+  padding: 3px 7px; border-radius: 3px;
+}
+.deal h2 { font-size: 18px; font-weight: 800; font-stretch: 105%; margin-top: 8px; line-height: 1.2; }
+.deal .was { color: var(--muted); text-decoration: line-through; font-size: 13px; margin-top: 6px; }
+.deal .now { font-family: var(--f-display); font-weight: 900; font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; }
+.deal .now small { font-family: var(--f-body); font-weight: 500; font-size: 12px; color: var(--muted); }
+.deal button { margin-top: 10px; }
+
+/* Filters */
+.bar { padding-block: 22px 6px; }
+.bar-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.bar h2 { font-size: 22px; font-weight: 850; font-stretch: 110%; text-transform: uppercase; }
+.count { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); }
+.chips {
+  display: flex; gap: 8px; margin-top: 14px; overflow-x: auto; padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+.chip {
+  flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+  padding: 7px 14px; font-size: 13.5px; font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip .n { font-family: var(--f-mono); font-weight: 400; font-size: 11.5px; opacity: .6; margin-left: 6px; }
+
+/* Grid */
+.grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px; padding-block: 12px 28px;
+}
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  display: flex; flex-direction: column; overflow: hidden; min-width: 0;
+}
+.card .art { position: relative; background: var(--tile); aspect-ratio: 4/3; max-width: 100%; }
+.art svg { display: block; width: 100%; height: 100%; }
+.badge {
+  position: absolute; top: 10px; left: 10px; font-family: var(--f-mono); font-size: 10.5px;
+  letter-spacing: .06em; text-transform: uppercase; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); padding: 2px 7px; border-radius: 3px;
+}
+.card .body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.sku { font-family: var(--f-mono); font-size: 11px; color: var(--muted); letter-spacing: .02em; }
+.card h3 { font-family: var(--f-body); font-size: 15px; font-weight: 700; line-height: 1.3; }
+.spec { font-size: 13px; color: var(--muted); }
+.buy { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; }
+.price { font-family: var(--f-display); font-weight: 850; font-size: 21px; line-height: 1; font-variant-numeric: tabular-nums; }
+.price small { display: block; font-family: var(--f-body); font-weight: 500; font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+
+.btn {
+  border: 0; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 13.5px;
+  padding: 8px 12px; background: var(--accent); color: var(--accent-ink); white-space: nowrap;
+}
+.btn:hover { filter: brightness(1.07); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.stepper button { width: 32px; height: 34px; border: 0; background: var(--bg); cursor: pointer; font-size: 17px; font-weight: 600; }
+.stepper input {
+  width: 46px; height: 34px; border: 0; text-align: center; background: var(--surface);
+  font-variant-numeric: tabular-nums; font-weight: 600; -moz-appearance: textfield;
+}
+.stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.empty { grid-column: 1 / -1; padding: 40px 0; text-align: center; color: var(--muted); }
+
+/* Calculator */
+.calc {
+  border: 1px dashed var(--muted); border-radius: 10px; padding: 20px;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 24px; margin-bottom: 36px;
+}
+.calc h2 { font-size: 20px; font-weight: 850; font-stretch: 110%; text-transform: uppercase; }
+.calc p { margin: 8px 0 0; color: var(--muted); font-size: 14px; max-width: 46ch; }
+.calc form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.field input, .field select {
+  width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface);
+}
+.calc-out {
+  grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  background: var(--accent-soft); border-radius: 8px; padding: 12px 14px;
+}
+.calc-out strong { font-family: var(--f-display); font-size: 24px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.calc-out span { font-size: 13px; color: var(--muted); }
+
+/* Footer */
+footer { border-top: 1px solid var(--line); background: var(--surface); }
+footer .wrap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding-block: 28px; font-size: 14px; }
+footer h3 { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+footer p { margin: 0; color: var(--muted); }
+.fine { grid-column: 1 / -1; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+
+/* Quote bar + drawer */
+.qbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+  background: var(--ink); color: var(--bg);
+  padding: 12px var(--gutter-r) calc(12px + env(safe-area-inset-bottom, 0px)) var(--gutter-l);
+  transform: translateY(110%); transition: transform .25s ease;
+}
+.qbar.on { transform: none; }
+.qbar .in { max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.qbar .sum { font-size: 14px; }
+.qbar .sum b { font-family: var(--f-display); font-size: 20px; font-variant-numeric: tabular-nums; margin-left: 6px; }
+
+.sheet-bg { position: fixed; inset: 0; z-index: 40; background: rgba(8, 14, 17, .55); }
+.sheet {
+  position: fixed; z-index: 41; right: 0; top: 0; bottom: 0; width: min(440px, 100%);
+  background: var(--surface); display: flex; flex-direction: column;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) 20px;
+}
+.sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.sheet-head h2 { font-size: 20px; font-weight: 850; font-stretch: 110%; text-transform: uppercase; }
+.close { border: 0; background: transparent; cursor: pointer; font-size: 26px; line-height: 1; padding: 4px 8px; color: var(--muted); }
+.lines { list-style: none; padding: 0; margin: 14px 0 0; overflow-y: auto; flex: 1; display: flex; flex-direction: column; }
+.line { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.line .art { background: var(--tile); border-radius: 5px; aspect-ratio: 4/3; max-width: 100%; }
+.line .nm { font-size: 14px; font-weight: 600; line-height: 1.3; }
+.line .sub { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.line .right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.line .stepper button { width: 28px; height: 30px; font-size: 15px; }
+.line .stepper input { width: 40px; height: 30px; font-size: 13.5px; }
+.totals { border-top: 2px solid var(--ink); margin-top: 8px; padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.totals .row { display: flex; justify-content: space-between; align-items: baseline; }
+.totals .row b { font-family: var(--f-display); font-size: 26px; font-variant-numeric: tabular-nums; }
+.totals .field input { background: var(--bg); }
+.wa {
+  display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
+  background: #1f8f52; color: #fff; border-radius: 6px; padding: 12px; font-weight: 700;
+}
+.wa svg { width: 18px; height: 18px; }
+.note { font-size: 12px; color: var(--muted); margin: 0; }
+
+@media (max-width: 860px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); padding-block: 28px; }
+  .calc { grid-template-columns: minmax(0, 1fr); }
+  footer .wrap { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .top .wrap { flex-wrap: wrap; }
+  .search { flex-basis: 100%; }
+  .search input { max-width: none; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .card .body { padding: 10px; }
+  .card h3 { font-size: 14px; }
+  .buy { flex-direction: column; align-items: stretch; }
+  .buy .btn { width: 100%; }
+  .buy .stepper { justify-content: space-between; }
+  .buy .stepper input { flex: 1; }
+  .deal { grid-template-columns: 96px minmax(0, 1fr); }
+  .calc form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .calc form .field.full { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) { .qbar { transition: none; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio">
+      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+        <rect width="40" height="40" rx="7" fill="var(--accent)"/>
+        <g fill="var(--accent-ink)">
+          <rect x="7" y="24" width="12" height="7" rx="1"/><rect x="21" y="24" width="12" height="7" rx="1"/>
+          <rect x="14" y="15" width="12" height="7" rx="1"/><rect x="7" y="15" width="5" height="7" rx="1"/>
+          <rect x="28" y="15" width="5" height="7" rx="1"/><rect x="11" y="8" width="18" height="5" rx="1" opacity=".6"/>
+        </g>
+      </svg>
+      <span class="brand-name" id="storeName">Depósito Alicerce<small id="storeTag">MATERIAIS PARA CONSTRUÇÃO</small></span>
+    </a>
+    <div class="search">
+      <label for="q" hidden>Buscar produto</label>
+      <input id="q" type="search" placeholder="Buscar cimento, tubo, tinta…" autocomplete="off">
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="inicio">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Catálogo · Outubro 2026</p>
+      <h1>Do alicerce<br>ao <em>acabamento</em></h1>
+      <p class="lead">Cimento, areia, tijolo, hidráulica, elétrica e tinta num só lugar. Monte seu orçamento aqui e mande direto pelo WhatsApp: a gente confere estoque e frete na hora.</p>
+      <ul class="perks">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M2 6h11v10H2zM13 10h4l4 4v2h-8z"/><circle cx="6" cy="18" r="2" fill="var(--deep)"/><circle cx="17" cy="18" r="2" fill="var(--deep)"/></svg>Entrega própria em até 24h</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 10 5 4h14l2 6M4 10v10h16V10M3 10h18M9 20v-6h6v6"/></svg>Retirada no balcão</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>Pix ou até 10x no cartão</li>
+      </ul>
+    </div>
+    <article class="deal" aria-label="Oferta da semana">
+      <div class="art" id="dealArt"></div>
+      <div>
+        <span class="tag">Oferta da semana</span>
+        <h2 id="dealName"></h2>
+        <div class="was" id="dealWas"></div>
+        <div class="now" id="dealNow"></div>
+        <button class="btn" id="dealAdd" type="button">Adicionar ao orçamento</button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="bar">
+    <div class="bar-head">
+      <h2>Produtos</h2>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="chips" id="chips" role="toolbar" aria-label="Filtrar por setor"></div>
+  </div>
+  <div class="grid" id="grid"></div>
+
+  <section class="calc" aria-labelledby="calcTitle">
+    <div>
+      <h2 id="calcTitle">Quantos tijolos para a parede?</h2>
+      <p>Informe as medidas e o sistema calcula a quantidade com 10% de margem para quebra e recorte. Desconte portas e janelas da área.</p>
+    </div>
+    <form id="calcForm">
+      <div class="field">
+        <label for="cW">Comprimento (m)</label>
+        <input id="cW" type="number" min="0" step="0.1" value="6" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="cH">Altura (m)</label>
+        <input id="cH" type="number" min="0" step="0.1" value="2.8" inputmode="decimal">
+      </div>
+      <div class="field full">
+        <label for="cT">Material</label>
+        <select id="cT">
+          <option value="tijolo-8f">Tijolo 8 furos (25 un/m²)</option>
+          <option value="bloco-14">Bloco de concreto (12,5 un/m²)</option>
+        </select>
+      </div>
+      <div class="calc-out">
+        <div><strong id="cOut">0 un</strong><br><span id="cSub"></span></div>
+        <button class="btn" type="submit">Adicionar ao orçamento</button>
+      </div>
+    </form>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <h3>Endereço</h3>
+      <p>Av. das Indústrias, 1450 · Distrito Industrial<br>Estacionamento para caminhão e carreto</p>
+    </div>
+    <div>
+      <h3>Horário</h3>
+      <p>Seg a sex 7h às 18h<br>Sábado 7h às 13h</p>
+    </div>
+    <div>
+      <h3>Pagamento</h3>
+      <p>Pix com 5% de desconto · Cartão em até 10x<br>Boleto para construtoras cadastradas</p>
+    </div>
+    <p class="fine">Imagens ilustrativas. Preços de referência sujeitos a alteração sem aviso e confirmados no orçamento. Catálogo demonstrativo.</p>
+  </div>
+</footer>
+
+<div class="qbar" id="qbar" aria-live="polite">
+  <div class="in">
+    <div class="sum"><span id="qItems">0 itens</span><b id="qTotal">R$ 0,00</b></div>
+    <button class="btn" id="qOpen" type="button">Ver orçamento</button>
+  </div>
+</div>
+
+<div class="sheet-bg" id="sheetBg" hidden></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="sheet-head">
+    <h2 id="sheetTitle">Seu orçamento</h2>
+    <button class="close" id="sheetClose" type="button" aria-label="Fechar">×</button>
+  </div>
+  <ul class="lines" id="lines"></ul>
+  <div class="totals">
+    <div class="row"><span>Total estimado</span><b id="sTotal">R$ 0,00</b></div>
+    <div class="field">
+      <label for="cliName">Seu nome</label>
+      <input id="cliName" type="text" placeholder="Ex.: João da obra" autocomplete="name">
+    </div>
+    <div class="field">
+      <label for="cliPlace">Bairro para entrega</label>
+      <input id="cliPlace" type="text" placeholder="Ou escreva: retiro na loja">
+    </div>
+    <a class="wa" id="waLink" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+      Enviar orçamento pelo WhatsApp
+    </a>
+    <p class="note" id="waNote"></p>
+  </div>
+</aside>
+
+<script>
+/* ===== Configuração da loja: troque aqui para personalizar ===== */
+const STORE = {
+  name: "Depósito Alicerce",
+  tagline: "MATERIAIS PARA CONSTRUÇÃO",
+  whatsapp: "",            // ex.: "5511999999999" (com DDI e DDD). Vazio = o WhatsApp pede para escolher o contato
+  dealId: "cimento-cp2",
+  dealPriceCents: 3690
+};
+
+/* ===== Ilustrações (SVG, viewBox 160x120) ===== */
+const shadow = (rx = 52) => `<ellipse cx="80" cy="104" rx="${rx}" ry="5" fill="#000" opacity=".13"/>`;
+const svg = (inner) => `<svg viewBox="0 0 160 120" role="img" aria-hidden="true">${inner}</svg>`;
+
+const ART = {
+  bag: (band, label, sub, paper = "#dcd6c8") => svg(`${shadow(48)}
+    <path d="M40 24 Q80 15 120 24 L127 100 Q80 109 33 100 Z" fill="${paper}"/>
+    <path d="M40 24 Q80 15 120 24 L119 31 Q80 23 41 31 Z" fill="#000" opacity=".12"/>
+    <path d="M36 74 Q80 81 124 74 L125 88 Q80 95 35 88 Z" fill="#000" opacity=".06"/>
+    <rect x="45" y="42" width="70" height="32" rx="2" fill="${band}"/>
+    <text x="80" y="58" text-anchor="middle" font-family="Archivo, Arial, sans-serif" font-weight="900" font-size="12" fill="#fff"${label.length > 7 ? ' textLength="62" lengthAdjust="spacingAndGlyphs"' : ""}>${label}</text>
+    <text x="80" y="69" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="7" fill="#fff" opacity=".9"${sub.length > 13 ? ' textLength="62" lengthAdjust="spacingAndGlyphs"' : ""}>${sub}</text>`),
+
+  pile: (base, dot) => {
+    let d = "";
+    for (let i = 0; i < 70; i++) {
+      const x = 28 + ((i * 37) % 104);
+      const top = 40 + Math.pow((x - 80) / 62, 2) * 60;
+      const y = top + 3 + ((i * 53) % Math.max(1, 96 - top));
+      d += `<circle cx="${x}" cy="${y.toFixed(1)}" r="${1 + (i % 3) * .6}" fill="${dot}"/>`;
+    }
+    return svg(`${shadow(64)}<path d="M16 102 Q46 42 80 38 Q114 42 144 102 Z" fill="${base}"/>${d}`);
+  },
+
+  brick: () => {
+    let holes = "";
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 4; c++)
+      holes += `<rect x="${37 + c * 23}" y="${48 + r * 20}" width="17" height="14" rx="2" fill="#6e2a12"/>`;
+    return svg(`${shadow(58)}
+      <polygon points="30,42 50,28 150,28 130,42" fill="#d9774c"/>
+      <polygon points="130,42 150,28 150,78 130,92" fill="#9e4220"/>
+      <rect x="30" y="42" width="100" height="50" fill="#c2552c"/>${holes}`);
+  },
+
+  block: () => svg(`${shadow(58)}
+    <polygon points="30,50 55,32 145,32 120,50" fill="#b9bec0"/>
+    <polygon points="45,46 54,39 79,39 70,46" fill="#5d6466"/>
+    <polygon points="83,46 92,39 117,39 108,46" fill="#5d6466"/>
+    <polygon points="120,50 145,32 145,78 120,96" fill="#7c8385"/>
+    <rect x="30" y="50" width="90" height="46" fill="#9ca2a4"/>
+    <g fill="#8d9395">${[0,1,2,3,4,5,6,7].map(i => `<circle cx="${38 + i * 11}" cy="${60 + (i % 3) * 11}" r="1.2"/>`).join("")}</g>`),
+
+  roofsheet: () => {
+    let lines = "", wave = "M20 72";
+    for (let k = 0; k < 6; k++) lines += `<line x1="${29 + k * 15}" y1="72" x2="${69 + k * 15}" y2="32" stroke="#a7a399" stroke-width="2"/>`;
+    for (let k = 0; k < 6; k++) wave += ` q7.5 -7 15 0`;
+    return svg(`${shadow(62)}
+      <polygon points="20,72 60,32 150,32 110,72" fill="#cfccc3"/>${lines}
+      <path d="${wave} L110 82 ${"q-7.5 -7 -15 0 ".repeat(6)} Z" fill="#aca89e"/>
+      <polygon points="110,72 150,32 150,42 110,82" fill="#97938a"/>`);
+  },
+
+  rebar: () => {
+    let bars = "";
+    for (let i = 0; i < 6; i++) {
+      const o = i * 6;
+      bars += `<line x1="18" y1="${82 + o}" x2="142" y2="${26 + o}" stroke="#5e4c42" stroke-width="5" stroke-linecap="round"/>
+        <line x1="18" y1="${82 + o}" x2="142" y2="${26 + o}" stroke="#8a7364" stroke-width="5" stroke-dasharray="1.5 4"/>`;
+    }
+    return svg(`${shadow(62)}${bars}
+      <path d="M58 62 l6 28 M100 44 l6 28" stroke="#c9c9c9" stroke-width="2.5" fill="none"/>`);
+  },
+
+  pipe: (body, dark) => {
+    const one = (x, y, w) => `
+      <rect x="${x}" y="${y}" width="${w}" height="20" fill="${body}"/>
+      <rect x="${x}" y="${y + 3}" width="${w}" height="4" fill="#fff" opacity=".35"/>
+      <ellipse cx="${x}" cy="${y + 10}" rx="5" ry="10" fill="${body}"/>
+      <ellipse cx="${x + w}" cy="${y + 10}" rx="5" ry="10" fill="${dark}"/>
+      <ellipse cx="${x + w}" cy="${y + 10}" rx="3" ry="6.5" fill="#000" opacity=".55"/>`;
+    return svg(`${shadow(58)}${one(30, 80, 96)}${one(22, 58, 108)}${one(38, 36, 90)}`);
+  },
+
+  tank: () => svg(`${shadow(46)}
+    <path d="M40 42 L120 42 L113 98 Q80 106 47 98 Z" fill="#2b7cc0"/>
+    <path d="M44 60 Q80 66 116 60 M45.5 76 Q80 82 114.5 76" stroke="#5ba3df" stroke-width="2.5" fill="none"/>
+    <ellipse cx="80" cy="42" rx="44" ry="10" fill="#3a92d8"/>
+    <ellipse cx="80" cy="38" rx="16" ry="5" fill="#2b7cc0"/>
+    <rect x="98" y="88" width="10" height="7" fill="#e8e8e8"/>`),
+
+  coil: (wire) => {
+    let rings = "";
+    for (let i = 0; i < 6; i++) rings += `<ellipse cx="80" cy="62" rx="${48 - i * 5}" ry="${38 - i * 4}" fill="none" stroke="${wire}" stroke-width="5"/>`;
+    return svg(`${shadow(50)}${rings}
+      <ellipse cx="80" cy="62" rx="18" ry="14" fill="var(--tile)"/>
+      <path d="M128 62 C140 70 140 92 122 100" stroke="${wire}" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <rect x="56" y="86" width="48" height="16" rx="2" fill="#fff"/>
+      <text x="80" y="98" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="9" fill="#333">2,5 mm²</text>`);
+  },
+
+  breaker: () => svg(`${shadow(30)}
+    <rect x="58" y="16" width="44" height="88" rx="4" fill="#f3f3f0" stroke="#c4c4bd" stroke-width="2"/>
+    <circle cx="80" cy="26" r="4" fill="#9a9a94"/><circle cx="80" cy="94" r="4" fill="#9a9a94"/>
+    <rect x="68" y="40" width="24" height="34" rx="3" fill="#d9d9d3"/>
+    <rect x="71" y="43" width="18" height="16" rx="2" fill="#222"/>
+    <text x="80" y="86" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="9" fill="#333">C20</text>`),
+
+  socket: () => svg(`${shadow(44)}
+    <rect x="38" y="16" width="84" height="88" rx="9" fill="#f6f6f2" stroke="#cfcfc8" stroke-width="2"/>
+    <polygon points="80,34 104,48 104,76 80,90 56,76 56,48" fill="#e2e2db"/>
+    <circle cx="69" cy="58" r="4.5" fill="#3d3d3d"/><circle cx="91" cy="58" r="4.5" fill="#3d3d3d"/>
+    <circle cx="80" cy="75" r="4.5" fill="#3d3d3d"/>`),
+
+  can: (paint) => svg(`${shadow(42)}
+    <path d="M46 36 Q80 20 114 36" stroke="#8e8e8e" stroke-width="3" fill="none"/>
+    <path d="M44 40 L116 40 L110 100 Q80 106 50 100 Z" fill="#ececea"/>
+    <path d="M45.6 56 L114.4 56 L112 82 Q80 87 48 82 Z" fill="${paint}"/>
+    <text x="80" y="74" text-anchor="middle" font-family="Archivo, Arial, sans-serif" font-weight="900" font-size="13" fill="#fff">18 L</text>
+    <ellipse cx="80" cy="40" rx="36" ry="7" fill="#d4d4d0"/>
+    <path d="M58 37 Q80 33 102 37 L102 46 Q100 52 98 46 L98 41 Q80 39 64 41 L64 50 Q61 55 59 49 Z" fill="${paint}"/>`),
+
+  roller: (paint) => svg(`${shadow(42)}
+    <rect x="34" y="26" width="76" height="28" rx="14" fill="${paint}"/>
+    <rect x="40" y="30" width="64" height="5" rx="2.5" fill="#fff" opacity=".25"/>
+    <path d="M110 40 L124 40 L124 68 L86 76 L86 90" stroke="#555" stroke-width="4" fill="none" stroke-linejoin="round"/>
+    <rect x="80" y="88" width="12" height="22" rx="5" fill="#d08a2c"/>`),
+
+  tiles: (a, b) => {
+    let t = "";
+    const O = [80, 30], u = [22, 11], v = [-22, 11];
+    const P = (i, j) => [O[0] + i * u[0] + j * v[0], O[1] + i * u[1] + j * v[1]];
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+      const g = .06, p = [P(i + g, j + g), P(i + 1 - g, j + g), P(i + 1 - g, j + 1 - g), P(i + g, j + 1 - g)];
+      t += `<polygon points="${p.map(q => q.join(",")).join(" ")}" fill="${(i + j) % 2 ? a : b}"/>`;
+    }
+    return svg(`${shadow(62)}<polygon points="80,28 148,62 80,96 12,62" fill="#bdb6aa"/>${t}`);
+  },
+
+  barrow: () => svg(`${shadow(60)}
+    <line x1="58" y1="74" x2="16" y2="62" stroke="#4a4a4a" stroke-width="4" stroke-linecap="round"/>
+    <line x1="54" y1="78" x2="48" y2="100" stroke="#4a4a4a" stroke-width="4" stroke-linecap="round"/>
+    <line x1="98" y1="76" x2="114" y2="90" stroke="#4a4a4a" stroke-width="4"/>
+    <path d="M28 44 L124 44 L106 80 L50 80 Z" fill="#2f6f9f"/>
+    <path d="M28 44 L124 44 L121 50 L31 50 Z" fill="#fff" opacity=".2"/>
+    <circle cx="114" cy="90" r="14" fill="#262626"/><circle cx="114" cy="90" r="5" fill="#9a9a9a"/>`),
+
+  shovel: () => svg(`${shadow(40)}
+    <g transform="rotate(-38 80 62)">
+      <rect x="77" y="4" width="6" height="66" rx="2" fill="#b07c45"/>
+      <rect x="68" y="2" width="24" height="7" rx="3" fill="#3c3c3c"/>
+      <path d="M64 68 L96 68 L98 98 Q80 118 62 98 Z" fill="#7d8790"/>
+      <path d="M74 68 L86 68 L84 78 L76 78 Z" fill="#5f6870"/>
+    </g>`),
+
+  tape: () => {
+    let ticks = "";
+    for (let i = 0; i < 10; i++) ticks += `<line x1="${104 + i * 4.5}" y1="82" x2="${104 + i * 4.5}" y2="${i % 2 ? 86 : 89}" stroke="#333" stroke-width="1"/>`;
+    return svg(`${shadow(50)}
+      <rect x="100" y="81" width="48" height="11" fill="#f6dc6e"/>${ticks}
+      <rect x="146" y="77" width="4" height="19" fill="#555"/>
+      <rect x="36" y="34" width="66" height="62" rx="16" fill="#f0b31f"/>
+      <rect x="36" y="80" width="66" height="16" rx="6" fill="#2a2a2a"/>
+      <circle cx="69" cy="58" r="15" fill="#2a2a2a"/><circle cx="69" cy="58" r="5" fill="#f0b31f"/>`);
+  },
+
+  trowel: () => svg(`${shadow(50)}
+    <polygon points="22,78 78,58 128,80 74,100" fill="#b4babf"/>
+    <polygon points="22,78 78,58 80,64 30,80" fill="#fff" opacity=".25"/>
+    <path d="M78 66 L96 40 L104 40" stroke="#555" stroke-width="4" fill="none" stroke-linejoin="round"/>
+    <rect x="100" y="24" width="12" height="30" rx="5" fill="#b9733a" transform="rotate(35 106 39)"/>`)
+};
+
+/* ===== Catálogo ===== */
+const CATS = ["Básicos", "Alvenaria e estrutura", "Hidráulica", "Elétrica", "Pintura", "Pisos e revestimento", "Ferramentas"];
+
+const PRODUCTS = [
+  { id: "cimento-cp2", cat: 0, name: "Cimento CP II-F-32", spec: "Uso geral · NBR 16697", unit: "saco 50 kg", price: 3990, sku: "BAS-0101", hot: true, art: () => ART.bag("#5a6b78", "CP II-F-32", "CIMENTO · 50 kg") },
+  { id: "areia-media", cat: 0, name: "Areia média lavada", spec: "Reboco e assentamento", unit: "m³", price: 15900, sku: "BAS-0204", art: () => ART.pile("#d6b37a", "#b48f55") },
+  { id: "brita-1", cat: 0, name: "Pedra britada nº 1", spec: "9,5 a 19 mm · concreto", unit: "m³", price: 16900, sku: "BAS-0211", art: () => ART.pile("#8e9396", "#5f6467") },
+  { id: "cal-ch3", cat: 0, name: "Cal hidratada CH-III", spec: "Para argamassa de reboco", unit: "saco 20 kg", price: 1890, sku: "BAS-0130", art: () => ART.bag("#9aa7ae", "CAL CH-III", "HIDRATADA · 20 kg", "#ecebe6") },
+  { id: "argamassa-ac1", cat: 0, name: "Argamassa colante AC-I", spec: "Cerâmica em área interna", unit: "saco 20 kg", price: 1690, sku: "BAS-0142", art: () => ART.bag("#b8452a", "AC-I", "ARGAMASSA · 20 kg") },
+  { id: "argamassa-ac3", cat: 0, name: "Argamassa colante AC-III", spec: "Porcelanato e área externa", unit: "saco 20 kg", price: 3890, sku: "BAS-0144", art: () => ART.bag("#2e5d4b", "AC-III", "ARGAMASSA · 20 kg") },
+
+  { id: "impermeabilizante", cat: 0, name: "Argamassa impermeabilizante", spec: "Bicomponente · caixa d'água e baldrame", unit: "caixa 18 kg", price: 11900, sku: "BAS-0160", art: () => ART.bag("#2c6fa3", "IMPERMEAB.", "POLIMÉRICA · 18 kg") },
+
+  { id: "tijolo-8f", cat: 1, name: "Tijolo cerâmico 8 furos", spec: "9 × 19 × 19 cm", unit: "unidade", price: 105, sku: "ALV-0301", hot: true, art: () => ART.brick() },
+  { id: "bloco-14", cat: 1, name: "Bloco de concreto vedação", spec: "14 × 19 × 39 cm", unit: "unidade", price: 420, sku: "ALV-0312", art: () => ART.block() },
+  { id: "telha-fibro", cat: 1, name: "Telha ondulada fibrocimento", spec: "2,44 × 1,10 m · 6 mm", unit: "unidade", price: 7490, sku: "ALV-0420", art: () => ART.roofsheet() },
+  { id: "vergalhao-10", cat: 1, name: "Vergalhão CA-50 10 mm", spec: "3/8\" · barra de 12 m", unit: "barra", price: 5290, sku: "ALV-0505", art: () => ART.rebar() },
+
+  { id: "tubo-esgoto-100", cat: 2, name: "Tubo PVC esgoto 100 mm", spec: "Série normal · NBR 5688", unit: "barra 6 m", price: 8490, sku: "HID-0601", art: () => ART.pipe("#ecebe6", "#c9c8c2") },
+  { id: "tubo-soldavel-25", cat: 2, name: "Tubo PVC soldável 25 mm", spec: "Água fria · NBR 5648", unit: "barra 6 m", price: 2790, sku: "HID-0612", art: () => ART.pipe("#8a5a36", "#6b4227") },
+  { id: "caixa-1000", cat: 2, name: "Caixa d'água polietileno", spec: "Com tampa · 1.000 litros", unit: "unidade", price: 47900, sku: "HID-0650", hot: true, art: () => ART.tank() },
+
+  { id: "cabo-25", cat: 3, name: "Cabo flexível 2,5 mm² 750 V", spec: "Tomadas de uso geral", unit: "rolo 100 m", price: 25900, sku: "ELE-0701", art: () => ART.coil("#2c63b8") },
+  { id: "disjuntor-20", cat: 3, name: "Disjuntor DIN monopolar 20 A", spec: "Curva C · 3 kA", unit: "unidade", price: 1690, sku: "ELE-0730", art: () => ART.breaker() },
+  { id: "tomada-2pt", cat: 3, name: "Tomada 2P+T 10 A com placa", spec: "Padrão NBR 14136", unit: "unidade", price: 1290, sku: "ELE-0745", art: () => ART.socket() },
+
+  { id: "tinta-acrilica", cat: 4, name: "Tinta acrílica fosca branco neve", spec: "Premium · rende até 380 m²/demão", unit: "lata 18 L", price: 32900, sku: "PIN-0801", hot: true, art: () => ART.can("#c9c3b5") },
+  { id: "tinta-terracota", cat: 4, name: "Tinta acrílica fosca terracota", spec: "Standard · interno e externo", unit: "lata 18 L", price: 27900, sku: "PIN-0805", art: () => ART.can("#b5532f") },
+  { id: "massa-corrida", cat: 4, name: "Massa corrida PVA", spec: "Paredes internas", unit: "balde 25 kg", price: 7490, sku: "PIN-0820", art: () => ART.bag("#7f6aa8", "MASSA PVA", "CORRIDA · 25 kg", "#ecebe6") },
+  { id: "rolo-la", cat: 4, name: "Rolo de lã de carneiro 23 cm", spec: "Com suporte", unit: "unidade", price: 2890, sku: "PIN-0840", art: () => ART.roller("#e9e1cf") },
+
+  { id: "piso-ceramico", cat: 5, name: "Piso cerâmico 60 × 60 cm", spec: "PEI 4 · acetinado cinza", unit: "m²", price: 3490, sku: "PIS-0901", art: () => ART.tiles("#cfd2d1", "#b9bdbc") },
+  { id: "porcelanato", cat: 5, name: "Porcelanato polido 80 × 80 cm", spec: "Retificado · bege marfim", unit: "m²", price: 7990, sku: "PIS-0910", art: () => ART.tiles("#e7dcc8", "#d9ccb4") },
+  { id: "rejunte", cat: 5, name: "Rejunte flexível cinza platina", spec: "Juntas de 2 a 10 mm", unit: "saco 1 kg", price: 990, sku: "PIS-0930", art: () => ART.bag("#6e7478", "REJUNTE", "FLEXÍVEL · 1 kg", "#ecebe6") },
+
+  { id: "carrinho", cat: 6, name: "Carrinho de mão 60 L", spec: "Pneu com câmara", unit: "unidade", price: 26900, sku: "FER-1001", art: () => ART.barrow() },
+  { id: "pa", cat: 6, name: "Pá quadrada com cabo", spec: "Cabo de madeira 71 cm", unit: "unidade", price: 5490, sku: "FER-1010", art: () => ART.shovel() },
+  { id: "trena", cat: 6, name: "Trena emborrachada 5 m", spec: "Fita de aço 19 mm", unit: "unidade", price: 2490, sku: "FER-1022", art: () => ART.tape() },
+  { id: "colher", cat: 6, name: "Colher de pedreiro 8\"", spec: "Aço carbono · cabo de madeira", unit: "unidade", price: 2190, sku: "FER-1030", art: () => ART.trowel() }
+];
+const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
+const artCache = {};
+const artOf = (p) => (artCache[p.id] ??= p.art());
+
+/* ===== Estado ===== */
+const KEY = "alicerce-orcamento";
+let cart = {};
+try { cart = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch { cart = {}; }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch {} };
+let activeCat = -1, query = "";
+
+const brl = (c) => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const priceOf = (p) => (p.id === STORE.dealId ? STORE.dealPriceCents : p.price);
+const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const $ = (id) => document.getElementById(id);
+
+function setQty(id, q) {
+  q = Math.max(0, Math.min(99999, Math.round(Number(q) || 0)));
+  if (q) cart[id] = q; else delete cart[id];
+  save(); renderGrid(); renderCart();
+}
+
+/* ===== Render ===== */
+function stepper(id, q) {
+  return `<div class="stepper" data-id="${id}">
+    <button type="button" data-d="-1" aria-label="Diminuir">−</button>
+    <input type="number" id="q-${id}" value="${q}" min="0" inputmode="numeric" aria-label="Quantidade">
+    <button type="button" data-d="1" aria-label="Aumentar">+</button></div>`;
+}
+
+function renderChips() {
+  const counts = CATS.map((_, i) => PRODUCTS.filter(p => p.cat === i).length);
+  $("chips").innerHTML = [`<button class="chip" data-c="-1" aria-pressed="${activeCat === -1}">Todos<span class="n">${PRODUCTS.length}</span></button>`]
+    .concat(CATS.map((c, i) => `<button class="chip" data-c="${i}" aria-pressed="${activeCat === i}">${c}<span class="n">${counts[i]}</span></button>`)).join("");
+}
+
+function renderGrid() {
+  const focused = document.activeElement && document.activeElement.id;
+  const q = norm(query.trim());
+  const list = PRODUCTS.filter(p => (activeCat < 0 || p.cat === activeCat) &&
+    (!q || norm(`${p.name} ${p.spec} ${CATS[p.cat]} ${p.sku}`).includes(q)));
+  $("count").textContent = `${list.length} ${list.length === 1 ? "produto" : "produtos"}`;
+  $("grid").innerHTML = list.length ? list.map(p => {
+    const q = cart[p.id] || 0;
+    const deal = p.id === STORE.dealId;
+    return `<article class="card">
+      <div class="art">${artOf(p)}${deal ? `<span class="badge">Oferta</span>` : p.hot ? `<span class="badge">Mais vendido</span>` : ""}</div>
+      <div class="body">
+        <span class="sku">${p.sku}</span>
+        <h3>${p.name}</h3>
+        <span class="spec">${p.spec}</span>
+        <div class="buy">
+          <div class="price">${brl(priceOf(p))}<small>por ${p.unit}</small></div>
+          ${q ? stepper(p.id, q) : `<button class="btn" type="button" data-add="${p.id}">Adicionar</button>`}
+        </div>
+      </div></article>`;
+  }).join("") : `<p class="empty">Nenhum produto encontrado para “${query.replace(/[<>&]/g, "")}”. Pergunte no WhatsApp: temos mais de 3 mil itens na loja.</p>`;
+  if (focused && focused.startsWith("q-") && $(focused)) { const el = $(focused); el.focus(); el.select(); }
+}
+
+function renderCart() {
+  const ids = Object.keys(cart).filter(id => byId[id]);
+  const units = ids.reduce((s, id) => s + cart[id], 0);
+  const total = ids.reduce((s, id) => s + cart[id] * priceOf(byId[id]), 0);
+  $("qbar").classList.toggle("on", ids.length > 0);
+  $("qItems").textContent = `${ids.length} ${ids.length === 1 ? "produto" : "produtos"} · ${units} un`;
+  $("qTotal").textContent = brl(total);
+  $("sTotal").textContent = brl(total);
+  $("lines").innerHTML = ids.length ? ids.map(id => {
+    const p = byId[id];
+    return `<li class="line"><div class="art">${artOf(p)}</div>
+      <div><div class="nm">${p.name}</div><div class="sub">${brl(priceOf(p))} / ${p.unit}</div></div>
+      <div class="right">${stepper(id, cart[id])}<span class="sub">${brl(cart[id] * priceOf(p))}</span></div></li>`;
+  }).join("") : `<li class="note" style="padding:20px 0">Seu orçamento está vazio. Toque em “Adicionar” nos produtos.</li>`;
+  updateWa(ids, total);
+}
+
+function updateWa(ids = Object.keys(cart).filter(id => byId[id]), total) {
+  if (total === undefined) total = ids.reduce((s, id) => s + cart[id] * priceOf(byId[id]), 0);
+  const name = $("cliName").value.trim(), place = $("cliPlace").value.trim();
+  const msg = [
+    `Olá, ${STORE.name}! Quero um orçamento:`, "",
+    ...ids.map(id => `• ${cart[id]}× ${byId[id].name} (${byId[id].unit}) = ${brl(cart[id] * priceOf(byId[id]))}`),
+    "", `Total estimado: ${brl(total)}`,
+    name ? `Nome: ${name}` : null, place ? `Entrega: ${place}` : null
+  ].filter(l => l !== null).join("\n");
+  $("waLink").href = `https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(msg)}`;
+  $("waNote").textContent = STORE.whatsapp
+    ? "Abre o WhatsApp com a lista pronta. O vendedor confirma estoque, frete e prazo."
+    : "Abre o WhatsApp com a lista pronta para você escolher o contato da loja.";
+}
+
+function renderDeal() {
+  const p = byId[STORE.dealId];
+  $("dealArt").innerHTML = artOf(p);
+  $("dealName").textContent = `${p.name} · ${p.unit}`;
+  $("dealWas").textContent = `de ${brl(p.price)}`;
+  $("dealNow").innerHTML = `${brl(STORE.dealPriceCents)} <small>à vista</small>`;
+}
+
+/* ===== Calculadora ===== */
+const RATE = { "tijolo-8f": 25, "bloco-14": 12.5 };
+function calc() {
+  const w = parseFloat($("cW").value) || 0, h = parseFloat($("cH").value) || 0, t = $("cT").value;
+  const area = w * h, qty = Math.ceil(area * RATE[t] * 1.1);
+  $("cOut").textContent = `${qty.toLocaleString("pt-BR")} un`;
+  $("cSub").textContent = `${area.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} m² · ${brl(qty * priceOf(byId[t]))}`;
+  return { t, qty };
+}
+
+/* ===== Eventos ===== */
+$("chips").addEventListener("click", e => {
+  const b = e.target.closest("[data-c]"); if (!b) return;
+  activeCat = Number(b.dataset.c); renderChips(); renderGrid();
+});
+$("q").addEventListener("input", e => { query = e.target.value; renderGrid(); });
+
+function onStep(e) {
+  const add = e.target.closest("[data-add]");
+  if (add) { setQty(add.dataset.add, 1); return; }
+  const b = e.target.closest(".stepper button"); if (!b) return;
+  const id = b.parentElement.dataset.id;
+  setQty(id, (cart[id] || 0) + Number(b.dataset.d));
+}
+function onType(e) {
+  const s = e.target.closest(".stepper"); if (!s || e.target.tagName !== "INPUT") return;
+  setQty(s.dataset.id, e.target.value);
+}
+for (const el of [$("grid"), $("lines")]) { el.addEventListener("click", onStep); el.addEventListener("change", onType); }
+
+$("dealAdd").addEventListener("click", () => setQty(STORE.dealId, (cart[STORE.dealId] || 0) + 1));
+$("calcForm").addEventListener("input", calc);
+$("calcForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const { t, qty } = calc(); if (qty) setQty(t, (cart[t] || 0) + qty);
+});
+
+function openSheet(open) {
+  $("sheet").hidden = !open; $("sheetBg").hidden = !open;
+  if (open) $("sheetClose").focus(); else $("qOpen").focus();
+}
+$("qOpen").addEventListener("click", () => openSheet(true));
+$("sheetClose").addEventListener("click", () => openSheet(false));
+$("sheetBg").addEventListener("click", () => openSheet(false));
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("sheet").hidden) openSheet(false); });
+$("cliName").addEventListener("input", () => updateWa());
+$("cliPlace").addEventListener("input", () => updateWa());
+
+/* ===== Init ===== */
+document.title = STORE.name;
+$("storeName").firstChild.textContent = STORE.name;
+$("storeTag").textContent = STORE.tagline;
+renderChips(); renderGrid(); renderCart(); renderDeal(); calc();
+</script>
