@@ -1,0 +1,1154 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111315">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Depósito Alicerce Mobile</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app de uma tela com abas inferiores (Início, Produtos, Calcular, Orçamento), ficha de produto em folha inferior.
+   No computador o app aparece dentro de uma moldura de celular para apresentação; no celular ocupa a tela inteira.
+   Cor: grafite e neutros frios; amarelo de sinalização é a cor da marca (ação e preço); verde só para WhatsApp e Pix. */
+:root {
+  color-scheme: light;
+  --ink: #111315;
+  --ink-2: #1d2024;
+  --ink-3: #2b2f34;
+  --bg: #f2f3f1;
+  --paper: #ffffff;
+  --tile: #eceeeb;
+  --line: #e4e6e2;
+  --muted: #5b6168;
+  --soft: #8a9097;
+  --yellow: #ffc21a;
+  --yellow-2: #ffd75e;
+  --yellow-50: #fff6d9;
+  --green: #0e7a3e;
+  --green-2: #16a34a;
+  --stage: #dfe1dd;
+
+  --f-display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "Geist Mono", ui-monospace, Menlo, monospace;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --pad: 18px;
+  --tab-h: 68px;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; box-sizing: border-box; background: var(--paper); }
+body { height: 100%; margin: 0; overflow: hidden; background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; }
+p { margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 8px; }
+.num { font-variant-numeric: tabular-nums; }
+svg.i { width: 22px; height: 22px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Palco e moldura ---------- */
+.stage { height: 100%; }
+.frame { height: 100%; }
+.phone { position: relative; height: 100%; overflow: hidden; background: var(--bg); }
+.statusbar, .island, .caption { display: none; }
+.screen { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; padding-bottom: calc(var(--tab-h) + 24px); scrollbar-width: none; }
+.screen::-webkit-scrollbar { display: none; }
+
+@media (min-width: 640px) and (min-height: 560px) {
+  html, body { background: var(--stage); }
+  body {
+    background-image: radial-gradient(60% 60% at 50% 40%, #eef0ec, var(--stage));
+  }
+  .stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px 16px; }
+  .frame { width: 390px; height: 844px; flex: none; transform-origin: top center; }
+  .phone {
+    width: 390px; height: 844px; border-radius: 58px; padding: 0;
+    box-shadow: 0 0 0 11px #121416, 0 0 0 13px #3a3f45, 0 50px 90px -30px rgba(17,19,21,.55), 0 30px 60px -40px rgba(17,19,21,.4);
+  }
+  .screen { border-radius: 47px; padding-top: 50px; }
+  .statusbar {
+    display: flex; position: absolute; z-index: 40; top: 0; left: 0; right: 0; height: 50px; padding: 16px 30px 0 34px;
+    justify-content: space-between; align-items: flex-start; font-weight: 600; font-size: 15.5px; pointer-events: none;
+    background: linear-gradient(var(--bg) 70%, transparent);
+  }
+  .statusbar.dark { background: linear-gradient(var(--ink) 70%, transparent); color: #fff; }
+  .statusbar .ic { display: flex; gap: 6px; align-items: center; }
+  .statusbar svg { height: 12px; width: auto; fill: currentColor; }
+  .island { display: block; position: absolute; z-index: 41; top: 11px; left: 50%; width: 122px; height: 35px; margin-left: -61px; border-radius: 20px; background: #050505; }
+  .caption { display: flex; gap: 10px; align-items: center; font-size: 13px; color: var(--muted); }
+  .caption b { color: var(--ink); font-weight: 600; }
+  .caption .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--soft); }
+  .tabbar { border-radius: 0 0 47px 47px; padding-bottom: 22px !important; height: calc(var(--tab-h) + 22px) !important; }
+  .screen { padding-bottom: calc(var(--tab-h) + 44px); }
+  .sheet { border-radius: 30px 30px 47px 47px !important; }
+  .scrim { border-radius: 47px; }
+  .send-bar { bottom: calc(var(--tab-h) + 22px) !important; }
+}
+
+/* ---------- Tab bar ---------- */
+.tabbar {
+  position: absolute; z-index: 30; left: 0; right: 0; bottom: 0; height: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px));
+  padding: 6px max(10px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(10px, env(safe-area-inset-left, 0px));
+  background: rgba(255,255,255,.92); backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr);
+}
+.tab { border: 0; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11.5px; font-weight: 500; color: var(--soft); position: relative; }
+.tab .pill { width: 54px; height: 30px; border-radius: 999px; display: grid; place-items: center; transition: background .25s var(--ease), color .25s; }
+.tab[aria-current="page"] { color: var(--ink); }
+.tab[aria-current="page"] .pill { background: var(--ink); color: var(--yellow); }
+.tab .badge { position: absolute; top: 2px; left: 50%; margin-left: 10px; min-width: 18px; height: 18px; border-radius: 9px; padding: 0 5px; background: var(--yellow); color: var(--ink); font-size: 10.5px; font-weight: 700; display: grid; place-items: center; box-shadow: 0 0 0 2px #fff; }
+.tab .badge.bump { animation: bump .4s var(--ease); }
+@keyframes bump { 40% { transform: scale(1.35); } }
+
+/* ---------- Comum ---------- */
+.view { animation: fade .3s var(--ease); }
+@keyframes fade { from { opacity: .4; transform: translateY(6px); } }
+.px { padding-left: max(var(--pad), env(safe-area-inset-left, 0px)); padding-right: max(var(--pad), env(safe-area-inset-right, 0px)); }
+.sec { margin-top: 28px; }
+.sec-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.sec-h h2 { font-size: 22px; font-weight: 700; letter-spacing: -.03em; font-stretch: 92%; }
+.sec-h .link { border: 0; background: none; padding: 4px 0; font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; }
+.hscroll { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 4px; scroll-padding-left: var(--pad); }
+.hscroll::-webkit-scrollbar { display: none; }
+.hscroll > * { scroll-snap-align: start; flex: none; }
+.hscroll::after { content: ""; flex: 0 0 calc(var(--pad) - 10px); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 50px; padding: 0 22px; border: 0; border-radius: 999px;
+  background: var(--ink); color: #fff; font-weight: 600; font-size: 15.5px; cursor: pointer; text-decoration: none; white-space: nowrap; transition: transform .15s;
+}
+.btn:active { transform: scale(.97); }
+.btn.y { background: var(--yellow); color: var(--ink); }
+.btn.wa { background: var(--green); }
+.btn.sm { height: 38px; padding: 0 16px; font-size: 14px; }
+.btn.block { width: 100%; }
+.icon-btn { width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--paper); display: grid; place-items: center; cursor: pointer; flex: none; box-shadow: 0 1px 0 var(--line); }
+.chip { flex: none; height: 36px; padding: 0 15px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); font-size: 13.5px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+/* ---------- Início ---------- */
+.home-top { padding-top: 10px; }
+.loc { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.loc button.where { border: 0; background: none; padding: 0; text-align: left; cursor: pointer; min-width: 0; }
+.loc small { display: block; font-size: 12px; color: var(--muted); }
+.loc b { display: flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 600; }
+.loc b svg.i { width: 16px; height: 16px; }
+.brandmark { width: 42px; height: 42px; border-radius: 13px; background: var(--ink); display: grid; place-items: center; flex: none; }
+.brandmark svg { width: 24px; height: 24px; }
+.greet { font-size: 32px; font-weight: 720; letter-spacing: -.035em; line-height: 1; font-stretch: 90%; margin-top: 20px; }
+.greet em { font-style: normal; background: linear-gradient(transparent 58%, var(--yellow) 58%, var(--yellow) 92%, transparent 92%); }
+.searchbtn { margin-top: 16px; width: 100%; height: 52px; border-radius: 16px; border: 1px solid var(--line); background: var(--paper); display: flex; align-items: center; gap: 10px; padding: 0 16px; color: var(--soft); font-size: 15px; cursor: pointer; text-align: left; }
+.searchbtn .mic { margin-left: auto; width: 32px; height: 32px; border-radius: 10px; background: var(--bg); display: grid; place-items: center; color: var(--ink); }
+.searchbtn .mic svg.i { width: 18px; height: 18px; }
+
+.banners { margin-top: 18px; }
+.banner { width: calc(100% - 2 * var(--pad) + 0px); min-width: 300px; height: 176px; border-radius: 22px; position: relative; overflow: hidden; padding: 18px; display: flex; flex-direction: column; cursor: pointer; border: 0; text-align: left; }
+.banners .hscroll { padding-left: var(--pad); }
+.banner .kick { font-family: var(--f-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+.banner h3 { font-size: 24px; font-weight: 720; letter-spacing: -.03em; line-height: 1; margin-top: 8px; font-stretch: 90%; max-width: 58%; }
+.banner .p { margin-top: auto; }
+.banner .p s { font-size: 12px; opacity: .65; display: block; }
+.banner .p b { font-family: var(--f-display); font-size: 34px; font-weight: 750; letter-spacing: -.04em; line-height: 1; font-stretch: 88%; }
+.banner .p span { font-size: 12px; font-weight: 600; margin-left: 2px; }
+.banner .art { position: absolute; right: -14px; bottom: -6px; width: 56%; }
+.banner .art svg { width: 100%; height: auto; display: block; }
+.banner .timer { position: absolute; top: 16px; right: 16px; font-family: var(--f-mono); font-size: 11.5px; background: var(--ink); color: var(--yellow); padding: 3px 8px; border-radius: 999px; }
+.b-deal { background: var(--yellow); color: var(--ink); }
+.b-deal .art::before { content: ""; position: absolute; inset: 8% 12% 18% 12%; border-radius: 50%; background: rgba(255,255,255,.35); }
+.b-deal .art svg { position: relative; }
+.b-kit { background: var(--ink); color: #fff; }
+.b-kit::before { content: ""; position: absolute; right: -30%; bottom: -60%; width: 90%; aspect-ratio: 1; background: radial-gradient(closest-side, rgba(255,194,26,.28), transparent); }
+.b-kit .p b { color: var(--yellow); }
+.b-ship { background: var(--paper); color: var(--ink); border: 1px solid var(--line); }
+.b-ship .truck { position: absolute; right: 14px; bottom: 16px; width: 44%; }
+.dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+.dots i { width: 6px; height: 6px; border-radius: 3px; background: #c9ccc8; transition: width .3s var(--ease), background .3s; }
+.dots i.on { width: 18px; background: var(--ink); }
+
+.cats { padding-left: var(--pad); }
+.cat { width: 74px; border: 0; background: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.cat .c { width: 68px; height: 68px; border-radius: 22px; background: radial-gradient(100% 90% at 50% 15%, #fff, var(--tile) 75%); display: grid; place-items: center; overflow: hidden; border: 1px solid var(--line); }
+.cat .c svg { width: 118%; height: auto; }
+.cat span { font-size: 12px; font-weight: 500; text-align: center; line-height: 1.2; }
+
+.cd { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.cd b { font-family: var(--f-mono); font-weight: 500; background: var(--ink); color: var(--yellow); padding: 2px 8px; border-radius: 999px; font-size: 12px; }
+
+/* Card de produto */
+.mc { background: var(--paper); border-radius: 18px; padding: 6px; display: flex; flex-direction: column; min-width: 0; cursor: pointer; position: relative; border: 0; text-align: left; }
+.hscroll .mc { width: 158px; }
+.mc .im { position: relative; border-radius: 13px; background: radial-gradient(110% 90% at 50% 10%, #fff 0%, var(--tile) 72%); aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; }
+.mc .im svg { width: 96%; height: auto; }
+.mc .bd { position: absolute; top: 7px; left: 7px; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 999px; background: var(--yellow); color: var(--ink); }
+.mc .bd.top { background: var(--ink); color: #fff; font-weight: 600; }
+.mc .plus { position: absolute; right: 6px; bottom: 6px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--ink); color: #fff; display: grid; place-items: center; cursor: pointer; box-shadow: 0 6px 14px -6px rgba(0,0,0,.5); }
+.mc .plus svg.i { width: 18px; height: 18px; stroke-width: 2.4; }
+.mc .mq { position: absolute; right: 6px; bottom: 6px; left: 6px; height: 36px; border-radius: 999px; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 3px; box-shadow: 0 6px 14px -6px rgba(0,0,0,.5); }
+.mc .mq button { width: 30px; height: 30px; border-radius: 50%; border: 0; background: transparent; color: #fff; font-size: 17px; cursor: pointer; }
+.mc .mq span { font-weight: 700; font-size: 14px; }
+.mc .tx { padding: 9px 5px 5px; display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.mc .u { font-family: var(--f-mono); font-size: 10.5px; color: var(--soft); }
+.mc h3 { font-family: var(--f-body); font-size: 13.5px; font-weight: 600; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5em; }
+.mc .pr { margin-top: 6px; display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
+.mc .pr b { font-family: var(--f-display); font-size: 20px; font-weight: 720; letter-spacing: -.03em; line-height: 1; font-stretch: 90%; }
+.mc .pr span { font-size: 11px; font-weight: 700; color: var(--green); }
+.mc .pr s { font-size: 11.5px; color: var(--soft); width: 100%; }
+.g2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+/* Kits */
+.kc { width: 272px; border-radius: 22px; background: var(--ink); color: #fff; padding: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+.kc::before { content: ""; position: absolute; left: -20%; right: -20%; bottom: -55%; height: 80%; background: radial-gradient(closest-side, rgba(255,194,26,.22), transparent); }
+.kc > * { position: relative; }
+.kc .tag { font-family: var(--f-mono); font-size: 11px; color: #9aa1a8; text-transform: uppercase; letter-spacing: .06em; }
+.kc .save { position: absolute; top: 14px; right: 14px; background: var(--yellow); color: var(--ink); font-weight: 700; font-size: 12px; padding: 3px 9px; border-radius: 999px; }
+.kc h3 { font-size: 23px; font-weight: 720; letter-spacing: -.03em; margin-top: 6px; font-stretch: 90%; }
+.kc .pics { display: flex; justify-content: center; align-items: flex-end; height: 92px; margin: 6px 0 4px; }
+.kc .pics div { width: 34%; margin: 0 -5%; }
+.kc .pics div:nth-child(2) { width: 40%; z-index: 1; }
+.kc .pics svg { width: 100%; height: auto; display: block; }
+.kc .items { font-size: 12.5px; color: #aeb4bb; line-height: 1.5; }
+.kc .ft { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; margin-top: 12px; }
+.kc .ft s { font-size: 12px; color: #8a9097; display: block; }
+.kc .ft b { font-family: var(--f-display); font-size: 26px; font-weight: 720; letter-spacing: -.03em; color: var(--yellow); line-height: 1; font-stretch: 90%; }
+
+.pro { border-radius: 24px; background: var(--yellow); padding: 20px; position: relative; overflow: hidden; }
+.pro::after { content: ""; position: absolute; right: -50px; bottom: -50px; width: 170px; height: 170px; border-radius: 50%; border: 28px solid rgba(17,19,21,.06); }
+.pro .kick { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: rgba(17,19,21,.7); }
+.pro h3 { font-size: 25px; font-weight: 750; letter-spacing: -.035em; line-height: 1; margin-top: 8px; font-stretch: 88%; }
+.pro p { font-size: 14px; margin-top: 8px; color: rgba(17,19,21,.78); max-width: 30ch; }
+.pro .row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.pro .row span { background: rgba(255,255,255,.55); border-radius: 999px; padding: 5px 10px; font-size: 12.5px; font-weight: 600; }
+.pro .btn { margin-top: 16px; position: relative; z-index: 1; }
+
+.trust { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.trust div { background: var(--paper); border-radius: 18px; padding: 14px; }
+.trust .ic { width: 36px; height: 36px; border-radius: 11px; background: var(--yellow-50); display: grid; place-items: center; }
+.trust .ic svg.i { width: 19px; height: 19px; }
+.trust b { display: block; font-size: 14px; margin-top: 10px; }
+.trust span { font-size: 12.5px; color: var(--muted); line-height: 1.35; display: block; margin-top: 2px; }
+.fine { font-size: 11.5px; color: var(--soft); text-align: center; margin: 28px 0 0; }
+
+/* ---------- Produtos ---------- */
+.ptop { position: sticky; top: 0; z-index: 10; background: rgba(242,243,241,.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding-top: 10px; padding-bottom: 10px; }
+.vt { font-size: 30px; font-weight: 720; letter-spacing: -.035em; font-stretch: 90%; line-height: 1.05; }
+.sfield { margin-top: 12px; height: 48px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); display: flex; align-items: center; gap: 10px; padding: 0 14px; }
+.sfield svg.i { color: var(--soft); width: 19px; height: 19px; }
+.sfield input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-size: 16px; }
+.sfield .clr { border: 0; background: var(--bg); width: 26px; height: 26px; border-radius: 50%; cursor: pointer; color: var(--muted); }
+.fchips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-top: 10px; }
+.fchips::-webkit-scrollbar { display: none; }
+.pmeta { display: flex; justify-content: space-between; align-items: center; margin: 8px 0 10px; font-size: 13px; color: var(--muted); }
+.pmeta b { color: var(--ink); }
+.pmeta select { border: 0; background: transparent; font-size: 13px; font-weight: 600; color: var(--ink); padding: 4px 0; }
+.empty { grid-column: 1 / -1; background: var(--paper); border-radius: 20px; padding: 32px 18px; text-align: center; }
+.empty b { font-family: var(--f-display); font-size: 21px; letter-spacing: -.02em; display: block; }
+.empty p { color: var(--muted); font-size: 14px; margin: 6px 0 16px; }
+
+/* ---------- Calcular ---------- */
+.chero { background: var(--ink); color: #fff; border-radius: 0 0 28px 28px; padding-top: 14px; padding-bottom: 22px; position: relative; overflow: hidden; }
+.chero::before { content: ""; position: absolute; right: -30%; top: -50%; width: 90%; aspect-ratio: 1; background: radial-gradient(closest-side, rgba(255,194,26,.2), transparent); }
+.chero > * { position: relative; }
+.chero .kick { font-family: var(--f-mono); font-size: 11px; color: #9aa1a8; text-transform: uppercase; letter-spacing: .06em; }
+.chero h1 { font-size: 30px; font-weight: 720; letter-spacing: -.035em; line-height: 1; margin-top: 8px; font-stretch: 90%; }
+.chero p { color: #aeb4bb; font-size: 14px; margin-top: 8px; }
+.seg { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--ink-2); border-radius: 14px; padding: 4px; margin-top: 16px; }
+.seg button { height: 38px; border: 0; border-radius: 10px; background: transparent; color: #aeb4bb; font-size: 13px; font-weight: 600; cursor: pointer; }
+.seg button[aria-selected="true"] { background: #fff; color: var(--ink); }
+.cfields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.cf { background: var(--paper); border-radius: 16px; padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; border: 1px solid transparent; }
+.cf:focus-within { border-color: var(--ink); }
+.cf.full { grid-column: 1 / -1; }
+.cf label { font-size: 12px; color: var(--muted); }
+.cf input, .cf select { border: 0; outline: none; background: transparent; font-size: 20px; font-weight: 600; padding: 0; width: 100%; font-family: var(--f-display); letter-spacing: -.01em; }
+.cf select { font-family: var(--f-body); font-size: 15px; height: 28px; }
+.cres { margin-top: 12px; background: var(--paper); border-radius: 20px; padding: 6px 16px 16px; }
+.cres .ln { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.cres .ln .nm { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 14px; }
+.cres .ln .nm i { width: 40px; height: 40px; border-radius: 11px; background: var(--tile); display: grid; place-items: center; overflow: hidden; flex: none; }
+.cres .ln .nm i svg { width: 120%; height: auto; }
+.cres .ln b { font-family: var(--f-display); font-size: 22px; font-weight: 720; letter-spacing: -.02em; flex: none; }
+.cres .ln b small { font-family: var(--f-body); font-size: 12px; color: var(--muted); font-weight: 500; margin-left: 3px; }
+.cres .tot { display: flex; justify-content: space-between; align-items: baseline; padding-top: 14px; }
+.cres .tot span { font-size: 13px; color: var(--muted); }
+.cres .tot b { font-family: var(--f-display); font-size: 24px; font-weight: 720; letter-spacing: -.03em; }
+.cres .note { font-size: 12px; color: var(--soft); margin-top: 6px; }
+.cres .btn { margin-top: 14px; }
+
+/* ---------- Orçamento ---------- */
+.ctop { padding-top: 10px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.ctop .clear { border: 0; background: none; font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; padding: 6px 0; }
+.lines { margin-top: 14px; background: var(--paper); border-radius: 20px; padding: 2px 14px; }
+.ln2 { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.ln2:last-child { border-bottom: 0; }
+.ln2 .im { width: 58px; height: 58px; border-radius: 13px; background: var(--tile); display: grid; place-items: center; overflow: hidden; }
+.ln2 .im svg { width: 112%; height: auto; }
+.ln2 .nm { font-size: 14px; font-weight: 600; line-height: 1.25; }
+.ln2 .sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.ln2 .r { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.ln2 .lt { font-size: 13px; font-weight: 600; }
+.qty { display: inline-flex; align-items: center; height: 34px; border-radius: 999px; background: var(--bg); }
+.qty button { width: 32px; height: 34px; border: 0; background: transparent; cursor: pointer; font-size: 17px; border-radius: 50%; }
+.qty input { width: 34px; border: 0; background: transparent; text-align: center; font-weight: 600; font-size: 14px; outline: none; -moz-appearance: textfield; }
+.qty input::-webkit-outer-spin-button, .qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.card2 { margin-top: 12px; background: var(--paper); border-radius: 20px; padding: 16px; }
+.ship { font-size: 13px; color: var(--muted); }
+.ship b { color: var(--ink); }
+.ship .bar { height: 6px; border-radius: 3px; background: var(--line); margin-top: 8px; overflow: hidden; }
+.ship .bar i { display: block; height: 100%; background: var(--green-2); border-radius: 3px; transition: width .4s var(--ease); }
+.zonerow { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; border: 0; background: var(--bg); border-radius: 14px; padding: 12px 14px; margin-top: 12px; cursor: pointer; text-align: left; }
+.zonerow small { display: block; font-size: 12px; color: var(--muted); }
+.zonerow b { font-size: 14.5px; font-weight: 600; }
+.trow { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; color: var(--muted); padding: 5px 0; }
+.trow .g { color: var(--green); font-weight: 600; }
+.trow.big { color: var(--ink); border-top: 1px dashed var(--line); margin-top: 6px; padding-top: 12px; }
+.trow.big b { font-family: var(--f-display); font-size: 32px; font-weight: 720; letter-spacing: -.035em; font-stretch: 90%; }
+.inp2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.inp2 input { height: 46px; border-radius: 13px; border: 1px solid var(--line); background: var(--paper); padding: 0 12px; font-size: 16px; width: 100%; min-width: 0; outline: none; }
+.inp2 input:focus { border-color: var(--ink); }
+.send-bar {
+  position: absolute; z-index: 25; left: 0; right: 0; bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px));
+  padding: 10px max(var(--pad), env(safe-area-inset-right, 0px)) 10px max(var(--pad), env(safe-area-inset-left, 0px));
+  background: linear-gradient(transparent, var(--bg) 30%);
+}
+.cempty { text-align: center; padding: 40px 10px 10px; }
+.cempty .art { width: 180px; margin: 0 auto; }
+.cempty .art svg { width: 100%; height: auto; }
+.cempty b { display: block; font-family: var(--f-display); font-size: 24px; letter-spacing: -.03em; margin-top: 8px; }
+.cempty p { color: var(--muted); font-size: 14px; margin: 6px auto 18px; max-width: 28ch; }
+.cempty .btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+/* ---------- Folhas inferiores ---------- */
+.scrim { position: absolute; inset: 0; z-index: 50; background: rgba(17,19,21,.45); opacity: 0; transition: opacity .3s; }
+.scrim.on { opacity: 1; }
+.sheet {
+  position: absolute; z-index: 51; left: 0; right: 0; bottom: 0; max-height: 90%; background: var(--paper);
+  border-radius: 28px 28px 0 0; display: flex; flex-direction: column; transform: translateY(105%); transition: transform .38s var(--ease);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.sheet.on { transform: none; }
+.grab { width: 40px; height: 5px; border-radius: 3px; background: #d5d8d4; margin: 9px auto 0; flex: none; }
+.sheet .scroll { overflow-y: auto; padding: 10px var(--pad) 0; scrollbar-width: none; }
+.sheet .scroll::-webkit-scrollbar { display: none; }
+.sheet .close { position: absolute; top: 14px; right: 14px; z-index: 2; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(255,255,255,.85); cursor: pointer; display: grid; place-items: center; }
+.pd-im { border-radius: 22px; background: radial-gradient(110% 90% at 50% 12%, #fff 0%, var(--tile) 72%); aspect-ratio: 1 / .78; display: grid; place-items: center; position: relative; overflow: hidden; }
+.pd-im svg { width: 82%; height: auto; }
+.pd-im .bd { position: absolute; top: 12px; left: 12px; background: var(--yellow); font-weight: 700; font-size: 12.5px; padding: 4px 10px; border-radius: 999px; }
+.pd-meta { font-family: var(--f-mono); font-size: 11.5px; color: var(--soft); margin-top: 14px; }
+.pd-name { font-size: 26px; font-weight: 720; letter-spacing: -.03em; line-height: 1.05; margin-top: 4px; font-stretch: 92%; }
+.pd-spec { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.pd-price { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: 16px; padding: 14px; background: var(--bg); border-radius: 16px; }
+.pd-price s { font-size: 12.5px; color: var(--soft); display: block; }
+.pd-price b { font-family: var(--f-display); font-size: 34px; font-weight: 750; letter-spacing: -.04em; line-height: 1; font-stretch: 88%; }
+.pd-price .g { font-size: 12.5px; font-weight: 700; color: var(--green); margin-left: 4px; }
+.pd-price small { display: block; font-size: 12.5px; color: var(--muted); margin-top: 4px; text-align: right; }
+.pd-info { display: flex; flex-direction: column; gap: 2px; margin-top: 12px; }
+.pd-info div { display: flex; gap: 12px; align-items: center; padding: 10px 0; font-size: 14px; }
+.pd-info svg.i { width: 20px; height: 20px; color: var(--muted); }
+.pd-info b { font-weight: 600; }
+.pd-foot { display: flex; gap: 10px; align-items: center; padding: 12px var(--pad) 16px; border-top: 1px solid var(--line); margin-top: 8px; }
+.pd-foot .qty { height: 50px; }
+.pd-foot .qty button { width: 40px; height: 50px; font-size: 20px; }
+.pd-foot .qty input { width: 38px; font-size: 16px; }
+.pd-foot .btn { flex: 1; min-width: 0; }
+.zl { display: flex; flex-direction: column; gap: 8px; padding: 6px 0 18px; }
+.zl h3 { font-size: 24px; font-weight: 720; letter-spacing: -.03em; font-stretch: 92%; margin-bottom: 4px; }
+.zopt { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 12px; align-items: center; border: 1.5px solid var(--line); background: var(--paper); border-radius: 16px; padding: 14px; cursor: pointer; text-align: left; }
+.zopt[aria-pressed="true"] { border-color: var(--ink); background: var(--bg); }
+.zopt i { width: 14px; height: 14px; border-radius: 50%; }
+.zopt b { display: block; font-size: 15px; }
+.zopt span { font-size: 12.5px; color: var(--muted); }
+.zopt .fee { text-align: right; font-weight: 600; font-size: 14px; }
+.zopt .fee small { display: block; font-size: 11.5px; color: var(--green); font-weight: 600; }
+
+.toast { position: absolute; z-index: 60; left: 50%; bottom: calc(var(--tab-h) + 16px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 16px); background: var(--ink); color: #fff; border-radius: 999px; padding: 9px 16px 9px 10px; font-size: 13.5px; font-weight: 500; display: flex; align-items: center; gap: 9px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .3s var(--ease); max-width: calc(100% - 32px); white-space: nowrap; }
+.toast span { overflow: hidden; text-overflow: ellipsis; }
+.toast i { width: 22px; height: 22px; border-radius: 50%; background: var(--yellow); color: var(--ink); display: grid; place-items: center; font-style: normal; font-size: 12px; font-weight: 700; flex: none; }
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+@media (min-width: 640px) and (min-height: 560px) { .toast { bottom: calc(var(--tab-h) + 38px); } }
+
+@media (prefers-reduced-motion: reduce) { *, *::before { transition: none !important; animation: none !important; } }
+</style>
+
+<!-- Gradientes de volume compartilhados pelas ilustrações -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="g-cyl" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".16"/><stop offset=".22" stop-color="#fff" stop-opacity=".32"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".26"/></linearGradient>
+    <linearGradient id="g-cylv" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".1"/><stop offset=".25" stop-color="#fff" stop-opacity=".4"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></linearGradient>
+    <linearGradient id="g-v" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#000" stop-opacity=".16"/></linearGradient>
+    <linearGradient id="g-h" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".1"/></linearGradient>
+    <linearGradient id="g-gloss" x1="0" x2="1" y1="0" y2="1"><stop offset=".2" stop-color="#fff" stop-opacity="0"/><stop offset=".42" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <radialGradient id="g-mound" cx=".38" cy=".25" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></radialGradient>
+    <radialGradient id="g-sheen" cx=".35" cy=".3" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g-floor" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".28"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+  </defs>
+</svg>
+
+<div class="stage">
+  <div class="frame" id="frame">
+    <div class="phone" id="phone">
+      <div class="island" aria-hidden="true"></div>
+      <div class="statusbar" id="statusbar" aria-hidden="true">
+        <span class="num" id="clock">9:41</span>
+        <span class="ic">
+          <svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+          <svg viewBox="0 0 16 12"><path d="M8 2.5c2.2 0 4.2.9 5.7 2.3l1.1-1.1A9.6 9.6 0 0 0 8 1 9.6 9.6 0 0 0 1.2 3.7l1.1 1.1A8 8 0 0 1 8 2.5Zm0 3c1.4 0 2.6.5 3.6 1.4l1.1-1.1A6.6 6.6 0 0 0 8 4a6.6 6.6 0 0 0-4.7 1.8l1.1 1.1c1-.9 2.2-1.4 3.6-1.4Zm0 3c.6 0 1.1.2 1.5.6L8 10.6 6.5 9.1c.4-.4.9-.6 1.5-.6Z"/></svg>
+          <svg viewBox="0 0 27 12"><rect x=".5" y=".5" width="22" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="24" y="4" width="2" height="4" rx="1" opacity=".4"/></svg>
+        </span>
+      </div>
+
+      <main class="screen" id="screen">
+        <!-- INÍCIO -->
+        <section class="view" data-view="home">
+          <div class="home-top px">
+            <div class="loc">
+              <button class="where" type="button" data-zone-open>
+                <small>Entregar em</small>
+                <b><span id="zoneLabel">Zona 1 · até 5 km</span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></b>
+              </button>
+              <span class="brandmark" aria-label="Depósito Alicerce"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 21 9H3Z" fill="#ffc21a"/><rect x="3" y="11" width="8" height="4" rx="1" fill="#fff"/><rect x="13" y="11" width="8" height="4" rx="1" fill="#fff"/><rect x="3" y="17" width="4" height="4" rx="1" fill="#fff" opacity=".55"/><rect x="9" y="17" width="12" height="4" rx="1" fill="#fff" opacity=".55"/></svg></span>
+            </div>
+            <h1 class="greet">Do que sua obra precisa <em>hoje?</em></h1>
+            <button class="searchbtn" type="button" data-go-search>
+              <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+              Cimento, tijolo, tubo…
+              <span class="mic"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></span>
+            </button>
+          </div>
+
+          <div class="banners">
+            <div class="hscroll" id="banners"></div>
+            <div class="dots" id="dots"><i class="on"></i><i></i><i></i></div>
+          </div>
+
+          <div class="sec">
+            <div class="sec-h px"><h2>Setores</h2></div>
+            <div class="hscroll cats" id="cats"></div>
+          </div>
+
+          <div class="sec">
+            <div class="sec-h px"><h2>Ofertas da semana</h2><span class="cd">acaba em <b class="num" id="cd">--</b></span></div>
+            <div class="hscroll" id="dealRail" style="padding-left:var(--pad)"></div>
+          </div>
+
+          <div class="sec">
+            <div class="sec-h px"><h2>Kits por etapa</h2><span class="cd">até 10% off</span></div>
+            <div class="hscroll" id="kitRail" style="padding-left:var(--pad)"></div>
+          </div>
+
+          <div class="sec px">
+            <div class="sec-h"><h2>Mais vendidos</h2><button class="link" type="button" data-go-search>Ver todos</button></div>
+            <div class="g2" id="topGrid"></div>
+          </div>
+
+          <div class="sec px">
+            <div class="pro">
+              <span class="kick">Cadastro profissional</span>
+              <h3>Pedreiro ou construtora? Preço de parceiro.</h3>
+              <p>Tabela especial, boleto para CNPJ e vendedor dedicado.</p>
+              <div class="row"><span>−8% em básicos</span><span>Boleto 28 dias</span></div>
+              <a class="btn sm" id="proWa" href="#" target="_blank" rel="noopener">Quero ser parceiro</a>
+            </div>
+          </div>
+
+          <div class="sec px">
+            <div class="trust">
+              <div><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M2 6h11v10H2zM13 10h4l4 4v2h-8z"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span><b>Entrega em até 4h</b><span>Frota própria com munck</span></div>
+              <div><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></span><b>Devolução de sobra</b><span>Saco fechado em 30 dias</span></div>
+              <div><span class="ic"><svg class="i" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><b>5% off no Pix</b><span>Ou 10x sem juros</span></div>
+              <div><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><b>Preço travado</b><span>Orçamento vale 48h</span></div>
+            </div>
+            <p class="fine">Imagens ilustrativas · preços de referência · catálogo demonstrativo</p>
+          </div>
+        </section>
+
+        <!-- PRODUTOS -->
+        <section class="view" data-view="products" hidden>
+          <div class="ptop px">
+            <h1 class="vt">Produtos</h1>
+            <div class="sfield">
+              <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+              <label for="q" hidden>Buscar</label>
+              <input id="q" type="search" placeholder="Buscar produtos" autocomplete="off" enterkeyhint="search">
+              <button class="clr" id="qClear" type="button" aria-label="Limpar busca" hidden>×</button>
+            </div>
+            <div class="fchips" id="fchips"></div>
+          </div>
+          <div class="px">
+            <div class="pmeta"><span id="pcount"></span>
+              <label for="sort" hidden>Ordenar</label>
+              <select id="sort"><option value="rel">Mais vendidos</option><option value="asc">Menor preço</option><option value="desc">Maior preço</option><option value="off">Maior desconto</option></select>
+            </div>
+            <div class="g2" id="pgrid"></div>
+          </div>
+        </section>
+
+        <!-- CALCULAR -->
+        <section class="view" data-view="calc" hidden>
+          <div class="chero px">
+            <span class="kick">Calculadora de obra</span>
+            <h1>Compre a quantidade certa</h1>
+            <p>Com margem de perda incluída. O resultado vai direto para o orçamento.</p>
+            <div class="seg" role="tablist" id="cseg">
+              <button type="button" role="tab" data-t="parede" aria-selected="true">Parede</button>
+              <button type="button" role="tab" data-t="contrapiso" aria-selected="false">Contrapiso</button>
+              <button type="button" role="tab" data-t="pintura" aria-selected="false">Pintura</button>
+              <button type="button" role="tab" data-t="piso" aria-selected="false">Piso</button>
+            </div>
+          </div>
+          <form class="px" id="calcForm">
+            <div class="cfields" id="cfields"></div>
+            <div class="cres">
+              <div id="cout"></div>
+              <div class="tot"><span>Estimativa no Pix</span><b class="num" id="ctotal"></b></div>
+              <p class="note" id="cnote"></p>
+              <button class="btn y block" type="submit">Adicionar ao orçamento</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ORÇAMENTO -->
+        <section class="view" data-view="cart" hidden>
+          <div class="ctop px"><h1 class="vt">Orçamento</h1><button class="clear" type="button" id="clearCart">Limpar</button></div>
+          <div class="px" id="cartBody"></div>
+        </section>
+      </main>
+
+      <div class="send-bar" id="sendBar" hidden>
+        <a class="btn wa block" id="waLink" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+          <span>Enviar pelo WhatsApp · <span class="num" id="sendTotal"></span></span>
+        </a>
+      </div>
+
+      <nav class="tabbar" aria-label="Navegação">
+        <button class="tab" type="button" data-tab="home" aria-current="page"><span class="pill"><svg class="i" viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span>Início</button>
+        <button class="tab" type="button" data-tab="products"><span class="pill"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></span>Produtos</button>
+        <button class="tab" type="button" data-tab="calc"><span class="pill"><svg class="i" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M16 11h0M8 15h2M12 15h2M8 18h2M12 18h4"/></svg></span>Calcular</button>
+        <button class="tab" type="button" data-tab="cart"><span class="pill"><svg class="i" viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span>Orçamento<span class="badge num" id="badge" hidden>0</span></button>
+      </nav>
+
+      <div class="scrim" id="scrim" hidden></div>
+      <aside class="sheet" id="pSheet" role="dialog" aria-modal="true" aria-label="Produto" hidden>
+        <div class="grab"></div>
+        <button class="close" type="button" data-close aria-label="Fechar"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <div class="scroll" id="pBody"></div>
+        <div class="pd-foot">
+          <div class="qty" id="pQty"><button type="button" data-pd="-1" aria-label="Diminuir">−</button><input type="number" id="pQtyIn" value="1" min="1" inputmode="numeric" aria-label="Quantidade"><button type="button" data-pd="1" aria-label="Aumentar">+</button></div>
+          <button class="btn y" type="button" id="pAdd"></button>
+        </div>
+      </aside>
+      <aside class="sheet" id="zSheet" role="dialog" aria-modal="true" aria-label="Região de entrega" hidden>
+        <div class="grab"></div>
+        <div class="scroll"><div class="zl" id="zList"></div></div>
+      </aside>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"><i>✓</i><span id="toastTxt"></span></div>
+    </div>
+  </div>
+  <p class="caption"><b id="capName">Depósito Alicerce</b><span class="dot"></span>versão mobile<span class="dot"></span>toque para navegar</p>
+</div>
+
+<script>
+/* ===== Configuração da loja ===== */
+const STORE = {
+  name: "Depósito Alicerce",
+  whatsapp: "",            // "55" + DDD + número. Vazio = o WhatsApp pede o contato
+  pixOff: 0.05,
+  heroDealId: "cimento-cp2"
+};
+const ZONES = [
+  { id: 1, name: "Zona 1", desc: "Até 5 km · entrega hoje", fee: 2500, free: 50000, color: "#ffc21a" },
+  { id: 2, name: "Zona 2", desc: "5 a 12 km · entrega hoje", fee: 4500, free: 150000, color: "#5b6168" },
+  { id: 3, name: "Zona 3", desc: "12 a 25 km · em até 24h", fee: 8000, free: Infinity, color: "#c9cdd2" },
+  { id: 0, name: "Retirar na loja", desc: "Av. das Indústrias, 1450", fee: 0, free: 0, color: "#0e7a3e" }
+];
+
+/* ===== Ilustrações (SVG 160x120). Volume vem dos gradientes globais em #defs ===== */
+const floor = (rx = 52, cy = 106) => `<ellipse cx="80" cy="${cy}" rx="${rx}" ry="7" fill="url(#g-floor)"/>`;
+const svg = (inner) => `<svg viewBox="0 0 160 120" aria-hidden="true">${inner}</svg>`;
+
+const ART = {
+  bag: (band, label, sub, paper = "#e3ddcf") => {
+    const body = "M40 24 Q80 15 120 24 L127 100 Q80 109 33 100 Z";
+    return svg(`${floor(50)}
+    <path d="${body}" fill="${paper}"/>
+    <path d="M45 42 h70 v32 h-70z" fill="${band}"/>
+    <path d="${body}" fill="url(#g-cyl)"/>
+    <path d="M40 24 Q80 15 120 24 L119 31 Q80 23 41 31 Z" fill="#000" opacity=".14"/>
+    <path d="M38 60 Q80 66 122 60" stroke="#000" stroke-opacity=".07" stroke-width="2" fill="none"/>
+    <text x="80" y="58" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="12" fill="#fff"${label.length > 7 ? ' textLength="62" lengthAdjust="spacingAndGlyphs"' : ""}>${label}</text>
+    <text x="80" y="69" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="7" fill="#fff" opacity=".9"${sub.length > 13 ? ' textLength="62" lengthAdjust="spacingAndGlyphs"' : ""}>${sub}</text>`);
+  },
+
+  pile: (base, dot) => {
+    let d = "";
+    for (let i = 0; i < 80; i++) {
+      const x = 26 + ((i * 37) % 108);
+      const top = 40 + Math.pow((x - 80) / 62, 2) * 60;
+      const y = top + 3 + ((i * 53) % Math.max(1, 98 - top));
+      d += `<circle cx="${x}" cy="${y.toFixed(1)}" r="${1 + (i % 3) * .6}" fill="${dot}"/>`;
+    }
+    const m = "M14 103 Q46 40 80 36 Q114 40 146 103 Z";
+    return svg(`${floor(70, 104)}<path d="${m}" fill="${base}"/>${d}<path d="${m}" fill="url(#g-mound)"/>`);
+  },
+
+  brick: () => {
+    let holes = "";
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 4; c++)
+      holes += `<rect x="${37 + c * 23}" y="${48 + r * 20}" width="17" height="14" rx="2" fill="#5e230f"/><rect x="${37 + c * 23}" y="${48 + r * 20}" width="17" height="4" rx="2" fill="#000" opacity=".25"/>`;
+    return svg(`${floor(62)}
+      <polygon points="30,42 50,28 150,28 130,42" fill="#e08458"/>
+      <polygon points="130,42 150,28 150,78 130,92" fill="#9a3f1e"/>
+      <rect x="30" y="42" width="100" height="50" fill="#c55a30"/>${holes}
+      <rect x="30" y="42" width="100" height="50" fill="url(#g-v)"/>`);
+  },
+
+  block: () => svg(`${floor(62)}
+    <polygon points="30,50 55,32 145,32 120,50" fill="#c3c8ca"/>
+    <polygon points="45,46 54,39 79,39 70,46" fill="#4f5658"/>
+    <polygon points="83,46 92,39 117,39 108,46" fill="#4f5658"/>
+    <polygon points="120,50 145,32 145,78 120,96" fill="#7a8183"/>
+    <rect x="30" y="50" width="90" height="46" fill="#a0a6a8"/>
+    <g fill="#8a9092">${[0,1,2,3,4,5,6,7,8,9].map(i => `<circle cx="${36 + i * 9}" cy="${58 + (i * 7) % 32}" r="1.1"/>`).join("")}</g>
+    <rect x="30" y="50" width="90" height="46" fill="url(#g-v)"/>`),
+
+  roofsheet: () => {
+    let lines = "", wave = "M20 72";
+    for (let k = 0; k < 6; k++) lines += `<line x1="${29 + k * 15}" y1="72" x2="${69 + k * 15}" y2="32" stroke="#a29e94" stroke-width="2.5"/>`;
+    for (let k = 0; k < 6; k++) wave += ` q7.5 -7 15 0`;
+    return svg(`${floor(64)}
+      <polygon points="20,72 60,32 150,32 110,72" fill="#d6d3ca"/>${lines}
+      <polygon points="20,72 60,32 150,32 110,72" fill="url(#g-h)"/>
+      <path d="${wave} L110 82 ${"q-7.5 -7 -15 0 ".repeat(6)} Z" fill="#aaa69c"/>
+      <polygon points="110,72 150,32 150,42 110,82" fill="#8f8b82"/>`);
+  },
+
+  rebar: () => {
+    let bars = "";
+    for (let i = 0; i < 6; i++) {
+      const o = i * 6;
+      bars += `<line x1="18" y1="${82 + o}" x2="142" y2="${26 + o}" stroke="#4f3f36" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="18" y1="${82 + o}" x2="142" y2="${26 + o}" stroke="#94796a" stroke-width="5.5" stroke-dasharray="1.5 4"/>
+        <line x1="18" y1="${80.5 + o}" x2="142" y2="${24.5 + o}" stroke="#fff" stroke-opacity=".18" stroke-width="1.5"/>`;
+    }
+    return svg(`${floor(64)}${bars}<path d="M58 62 l6 28 M100 44 l6 28" stroke="#d0d0d0" stroke-width="2.5" fill="none"/>`);
+  },
+
+  pipe: (body, dark) => {
+    const one = (x, y, w) => `
+      <ellipse cx="${x}" cy="${y + 10}" rx="5" ry="10" fill="${body}"/>
+      <rect x="${x}" y="${y}" width="${w}" height="20" fill="${body}"/>
+      <rect x="${x - 5}" y="${y}" width="${w + 5}" height="20" fill="url(#g-cylv)"/>
+      <ellipse cx="${x + w}" cy="${y + 10}" rx="5" ry="10" fill="${dark}"/>
+      <ellipse cx="${x + w}" cy="${y + 10}" rx="3.2" ry="7" fill="#1a1a1a" opacity=".7"/>`;
+    return svg(`${floor(60)}${one(30, 80, 96)}${one(22, 58, 108)}${one(38, 36, 90)}`);
+  },
+
+  tank: () => {
+    const b = "M40 42 L120 42 L113 98 Q80 106 47 98 Z";
+    return svg(`${floor(48)}
+    <path d="${b}" fill="#2b7cc0"/>
+    <path d="M44 60 Q80 66 116 60 M45.5 76 Q80 82 114.5 76" stroke="#6bb0ea" stroke-width="2.5" fill="none"/>
+    <path d="${b}" fill="url(#g-cyl)"/>
+    <ellipse cx="80" cy="42" rx="44" ry="10" fill="#3d97de"/>
+    <ellipse cx="80" cy="42" rx="44" ry="10" fill="url(#g-h)"/>
+    <ellipse cx="80" cy="38" rx="16" ry="5" fill="#2b7cc0"/>
+    <rect x="98" y="88" width="10" height="7" rx="1" fill="#eee"/>`);
+  },
+
+  coil: (wire) => {
+    let rings = "";
+    for (let i = 0; i < 6; i++) rings += `<ellipse cx="80" cy="62" rx="${48 - i * 5}" ry="${38 - i * 4}" fill="none" stroke="${wire}" stroke-width="5"/>`;
+    return svg(`${floor(52)}${rings}
+      <ellipse cx="80" cy="62" rx="48" ry="38" fill="url(#g-sheen)"/>
+      <ellipse cx="80" cy="62" rx="20" ry="16" fill="#eef0ee"/>
+      <path d="M128 62 C140 70 140 92 122 100" stroke="${wire}" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <rect x="56" y="86" width="48" height="16" rx="3" fill="#fff"/>
+      <text x="80" y="98" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="9" fill="#333">2,5 mm²</text>`);
+  },
+
+  breaker: () => svg(`${floor(32)}
+    <rect x="58" y="16" width="44" height="88" rx="5" fill="#f5f5f2" stroke="#cfcfc8" stroke-width="1.5"/>
+    <rect x="58" y="16" width="44" height="88" rx="5" fill="url(#g-h)"/>
+    <circle cx="80" cy="26" r="4" fill="#a3a39c"/><circle cx="80" cy="94" r="4" fill="#a3a39c"/>
+    <rect x="68" y="40" width="24" height="34" rx="3" fill="#dcdcd5"/>
+    <rect x="71" y="43" width="18" height="16" rx="2" fill="#1e1e1e"/>
+    <text x="80" y="86" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="9" fill="#333">C20</text>`),
+
+  socket: () => svg(`${floor(46)}
+    <rect x="38" y="16" width="84" height="88" rx="12" fill="#f7f7f3" stroke="#d5d5ce" stroke-width="1.5"/>
+    <rect x="38" y="16" width="84" height="88" rx="12" fill="url(#g-h)"/>
+    <polygon points="80,34 104,48 104,76 80,90 56,76 56,48" fill="#e4e4dd"/>
+    <polygon points="80,34 104,48 104,52 80,38 56,52 56,48" fill="#000" opacity=".06"/>
+    <circle cx="69" cy="58" r="4.5" fill="#333"/><circle cx="91" cy="58" r="4.5" fill="#333"/><circle cx="80" cy="75" r="4.5" fill="#333"/>`),
+
+  can: (paint) => {
+    const b = "M44 40 L116 40 L110 100 Q80 106 50 100 Z";
+    return svg(`${floor(44)}
+    <path d="M46 36 Q80 18 114 36" stroke="#8a8a8a" stroke-width="3" fill="none"/>
+    <path d="${b}" fill="#efefec"/>
+    <path d="M45.6 56 L114.4 56 L112 82 Q80 87 48 82 Z" fill="${paint}"/>
+    <path d="${b}" fill="url(#g-cyl)"/>
+    <text x="80" y="74" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="13" fill="#fff">18 L</text>
+    <ellipse cx="80" cy="40" rx="36" ry="7" fill="#d8d8d3"/>
+    <path d="M58 37 Q80 33 102 37 L102 46 Q100 52 98 46 L98 41 Q80 39 64 41 L64 50 Q61 55 59 49 Z" fill="${paint}"/>`);
+  },
+
+  roller: (paint) => svg(`${floor(44)}
+    <rect x="34" y="26" width="76" height="28" rx="14" fill="${paint}"/>
+    <rect x="34" y="26" width="76" height="28" rx="14" fill="url(#g-cylv)"/>
+    <path d="M110 40 L124 40 L124 68 L86 76 L86 90" stroke="#4a4a4a" stroke-width="4" fill="none" stroke-linejoin="round"/>
+    <rect x="80" y="88" width="12" height="22" rx="5" fill="#d08a2c"/>
+    <rect x="80" y="88" width="12" height="22" rx="5" fill="url(#g-cyl)"/>`),
+
+  tiles: (a, b) => {
+    let t = "";
+    const O = [80, 30], u = [22, 11], v = [-22, 11];
+    const P = (i, j) => [O[0] + i * u[0] + j * v[0], O[1] + i * u[1] + j * v[1]];
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+      const g = .05, p = [P(i + g, j + g), P(i + 1 - g, j + g), P(i + 1 - g, j + 1 - g), P(i + g, j + 1 - g)];
+      t += `<polygon points="${p.map(q => q.join(",")).join(" ")}" fill="${(i + j) % 2 ? a : b}"/>`;
+    }
+    return svg(`${floor(64, 100)}
+      <polygon points="80,30 146,63 146,69 80,102 14,69 14,63" fill="#a39c90"/>
+      <polygon points="80,28 146,61 80,94 14,61" fill="#c3bcb0"/>${t}
+      <polygon points="80,28 146,61 80,94 14,61" fill="url(#g-gloss)"/>`);
+  },
+
+  barrow: () => svg(`${floor(62)}
+    <line x1="58" y1="74" x2="16" y2="62" stroke="#3d3d3d" stroke-width="4" stroke-linecap="round"/>
+    <line x1="54" y1="78" x2="48" y2="100" stroke="#3d3d3d" stroke-width="4" stroke-linecap="round"/>
+    <line x1="98" y1="76" x2="114" y2="90" stroke="#3d3d3d" stroke-width="4"/>
+    <path d="M28 44 L124 44 L106 80 L50 80 Z" fill="#e8b10f"/>
+    <path d="M28 44 L124 44 L106 80 L50 80 Z" fill="url(#g-v)"/>
+    <path d="M28 44 L124 44 L121 50 L31 50 Z" fill="#fff" opacity=".3"/>
+    <circle cx="114" cy="90" r="14" fill="#202020"/><circle cx="114" cy="90" r="5" fill="#9a9a9a"/>`),
+
+  shovel: () => svg(`${floor(42)}
+    <g transform="rotate(-38 80 62)">
+      <rect x="77" y="4" width="6" height="66" rx="2" fill="#b07c45"/>
+      <rect x="77" y="4" width="6" height="66" rx="2" fill="url(#g-cyl)"/>
+      <rect x="68" y="2" width="24" height="7" rx="3" fill="#2f2f2f"/>
+      <path d="M64 68 L96 68 L98 98 Q80 118 62 98 Z" fill="#7d8790"/>
+      <path d="M64 68 L96 68 L98 98 Q80 118 62 98 Z" fill="url(#g-cyl)"/>
+      <path d="M74 68 L86 68 L84 78 L76 78 Z" fill="#5a636b"/>
+    </g>`),
+
+  tape: () => {
+    let ticks = "";
+    for (let i = 0; i < 10; i++) ticks += `<line x1="${104 + i * 4.5}" y1="82" x2="${104 + i * 4.5}" y2="${i % 2 ? 86 : 89}" stroke="#333" stroke-width="1"/>`;
+    return svg(`${floor(52)}
+      <rect x="100" y="81" width="48" height="11" fill="#f6dc6e"/>${ticks}
+      <rect x="146" y="77" width="4" height="19" fill="#555"/>
+      <rect x="36" y="34" width="66" height="62" rx="16" fill="#f0b31f"/>
+      <rect x="36" y="34" width="66" height="62" rx="16" fill="url(#g-v)"/>
+      <rect x="36" y="80" width="66" height="16" rx="6" fill="#262626"/>
+      <circle cx="69" cy="58" r="15" fill="#262626"/><circle cx="69" cy="58" r="5" fill="#f0b31f"/>`);
+  },
+
+  trowel: () => svg(`${floor(52)}
+    <polygon points="22,78 78,58 128,80 74,100" fill="#b7bdc2"/>
+    <polygon points="22,78 78,58 128,80 74,100" fill="url(#g-h)"/>
+    <polygon points="22,78 78,58 80,64 30,80" fill="#fff" opacity=".3"/>
+    <path d="M78 66 L96 40 L104 40" stroke="#4a4a4a" stroke-width="4" fill="none" stroke-linejoin="round"/>
+    <rect x="100" y="24" width="12" height="30" rx="5" fill="#b9733a" transform="rotate(35 106 39)"/>`)
+};
+
+
+const CATS = ["Básicos", "Alvenaria", "Hidráulica", "Elétrica", "Pintura", "Pisos", "Ferramentas"];
+const CAT_ART = ["cimento-cp2", "tijolo-8f", "caixa-1000", "cabo-25", "tinta-acrilica", "piso-ceramico", "carrinho"];
+
+const PRODUCTS = [
+  { id: "cimento-cp2", cat: 0, rank: 1, name: "Cimento CP II-F-32", spec: "Uso geral · NBR 16697", unit: "saco 50 kg", price: 3790, was: 4290, art: () => ART.bag("#4d5c68", "CP II-F-32", "CIMENTO · 50 kg") },
+  { id: "areia-media", cat: 0, rank: 3, name: "Areia média lavada", spec: "Reboco e assentamento", unit: "m³", price: 15900, art: () => ART.pile("#d9b57b", "#b48f55") },
+  { id: "brita-1", cat: 0, rank: 6, name: "Pedra britada nº 1", spec: "9,5 a 19 mm · concreto", unit: "m³", price: 16900, art: () => ART.pile("#8e9396", "#5f6467") },
+  { id: "cal-ch3", cat: 0, rank: 9, name: "Cal hidratada CH-III", spec: "Para argamassa de reboco", unit: "saco 20 kg", price: 1890, art: () => ART.bag("#8d9ba3", "CAL CH-III", "HIDRATADA · 20 kg", "#efeee9") },
+  { id: "argamassa-ac1", cat: 0, rank: 5, name: "Argamassa colante AC-I", spec: "Cerâmica em área interna", unit: "saco 20 kg", price: 1690, art: () => ART.bag("#b8452a", "AC-I", "ARGAMASSA · 20 kg") },
+  { id: "argamassa-ac3", cat: 0, rank: 14, name: "Argamassa colante AC-III", spec: "Porcelanato e área externa", unit: "saco 20 kg", price: 3490, was: 3990, art: () => ART.bag("#2e5d4b", "AC-III", "ARGAMASSA · 20 kg") },
+  { id: "impermeabilizante", cat: 0, rank: 20, name: "Argamassa impermeabilizante", spec: "Caixa d'água e baldrame", unit: "caixa 18 kg", price: 11900, art: () => ART.bag("#2c6fa3", "IMPERMEAB.", "POLIMÉRICA · 18 kg") },
+  { id: "tijolo-8f", cat: 1, rank: 2, name: "Tijolo cerâmico 8 furos", spec: "9 × 19 × 19 cm", unit: "unidade", price: 105, art: () => ART.brick() },
+  { id: "bloco-14", cat: 1, rank: 8, name: "Bloco de concreto vedação", spec: "14 × 19 × 39 cm", unit: "unidade", price: 420, art: () => ART.block() },
+  { id: "telha-fibro", cat: 1, rank: 11, name: "Telha ondulada fibrocimento", spec: "2,44 × 1,10 m · 6 mm", unit: "unidade", price: 7490, art: () => ART.roofsheet() },
+  { id: "vergalhao-10", cat: 1, rank: 10, name: "Vergalhão CA-50 10 mm", spec: "3/8\" · barra de 12 m", unit: "barra", price: 5290, art: () => ART.rebar() },
+  { id: "tubo-esgoto-100", cat: 2, rank: 12, name: "Tubo PVC esgoto 100 mm", spec: "Série normal · NBR 5688", unit: "barra 6 m", price: 8490, art: () => ART.pipe("#efeee9", "#c9c8c2") },
+  { id: "tubo-soldavel-25", cat: 2, rank: 13, name: "Tubo PVC soldável 25 mm", spec: "Água fria · NBR 5648", unit: "barra 6 m", price: 2790, art: () => ART.pipe("#8a5a36", "#6b4227") },
+  { id: "caixa-1000", cat: 2, rank: 7, name: "Caixa d'água 1.000 L", spec: "Polietileno · com tampa", unit: "unidade", price: 44900, was: 49900, art: () => ART.tank() },
+  { id: "cabo-25", cat: 3, rank: 15, name: "Cabo flexível 2,5 mm² 750 V", spec: "Tomadas de uso geral", unit: "rolo 100 m", price: 25900, art: () => ART.coil("#2c63b8") },
+  { id: "disjuntor-20", cat: 3, rank: 18, name: "Disjuntor DIN 20 A", spec: "Monopolar · curva C", unit: "unidade", price: 1690, art: () => ART.breaker() },
+  { id: "tomada-2pt", cat: 3, rank: 19, name: "Tomada 2P+T 10 A com placa", spec: "Padrão NBR 14136", unit: "unidade", price: 1290, art: () => ART.socket() },
+  { id: "tinta-acrilica", cat: 4, rank: 4, name: "Tinta acrílica fosca branco neve", spec: "Premium · até 300 m²/demão", unit: "lata 18 L", price: 29900, was: 34900, art: () => ART.can("#cfc8b8") },
+  { id: "tinta-terracota", cat: 4, rank: 22, name: "Tinta acrílica fosca terracota", spec: "Standard · interno e externo", unit: "lata 18 L", price: 27900, art: () => ART.can("#b5532f") },
+  { id: "massa-corrida", cat: 4, rank: 16, name: "Massa corrida PVA", spec: "Paredes internas", unit: "balde 25 kg", price: 7490, art: () => ART.bag("#6f5ba0", "MASSA PVA", "CORRIDA · 25 kg", "#efeee9") },
+  { id: "rolo-la", cat: 4, rank: 21, name: "Rolo de lã de carneiro 23 cm", spec: "Com suporte", unit: "unidade", price: 2890, art: () => ART.roller("#ebe3d1") },
+  { id: "piso-ceramico", cat: 5, rank: 17, name: "Piso cerâmico 60 × 60 cm", spec: "PEI 4 · acetinado cinza", unit: "m²", price: 3490, art: () => ART.tiles("#d2d5d4", "#bcc0bf") },
+  { id: "porcelanato", cat: 5, rank: 23, name: "Porcelanato polido 80 × 80 cm", spec: "Retificado · bege marfim", unit: "m²", price: 7990, art: () => ART.tiles("#ebe1cd", "#dccfb7") },
+  { id: "rejunte", cat: 5, rank: 24, name: "Rejunte flexível cinza platina", spec: "Juntas de 2 a 10 mm", unit: "saco 1 kg", price: 990, art: () => ART.bag("#6e7478", "REJUNTE", "FLEXÍVEL · 1 kg", "#efeee9") },
+  { id: "carrinho", cat: 6, rank: 25, name: "Carrinho de mão 60 L", spec: "Pneu com câmara", unit: "unidade", price: 26900, art: () => ART.barrow() },
+  { id: "pa", cat: 6, rank: 26, name: "Pá quadrada com cabo", spec: "Cabo de madeira 71 cm", unit: "unidade", price: 5490, art: () => ART.shovel() },
+  { id: "trena", cat: 6, rank: 27, name: "Trena emborrachada 5 m", spec: "Fita de aço 19 mm", unit: "unidade", price: 2490, art: () => ART.tape() },
+  { id: "colher", cat: 6, rank: 28, name: "Colher de pedreiro 8\"", spec: "Aço carbono", unit: "unidade", price: 2190, art: () => ART.trowel() }
+];
+const KITS = [
+  { id: "kit-reboco", tag: "Parede", name: "Reboco 40 m²", off: .08, items: [["cimento-cp2", 3], ["cal-ch3", 6], ["areia-media", 1]] },
+  { id: "kit-contrapiso", tag: "Piso", name: "Contrapiso 15 m²", off: .08, items: [["cimento-cp2", 6], ["areia-media", 1]] },
+  { id: "kit-piso", tag: "Acabamento", name: "Assentar piso 20 m²", off: .07, items: [["piso-ceramico", 22], ["argamassa-ac1", 5], ["rejunte", 4]] },
+  { id: "kit-pintura", tag: "Pintura", name: "Pintura 120 m²", off: .10, items: [["tinta-acrilica", 1], ["massa-corrida", 2], ["rolo-la", 2]] }
+];
+
+const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
+const artCache = {};
+const artOf = (p) => (artCache[p.id] ??= p.art());
+const $ = (id) => document.getElementById(id);
+const brl = (c) => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const pix = (c) => Math.round(c * (1 - STORE.pixOff));
+const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const esc = (s) => s.replace(/[<>&"]/g, "");
+const offPct = (p) => (p.was ? Math.round((1 - p.price / p.was) * 100) : 0);
+const unitShort = (u) => (u === "unidade" ? "un" : u);
+const waUrl = (t) => `https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(t)}`;
+const PLUS = `<svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>`;
+
+/* ===== Estado ===== */
+const KEY = "alicerce-mobile-v1";
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch { saved = {}; }
+let cart = saved.cart || {};
+let zoneId = saved.zone ?? 1;
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ cart, zone: zoneId })); } catch {} };
+let view = "home", activeCat = -1, query = "", sortBy = "rel", ctab = "parede", lastCalc = null, sheetId = null;
+const scrollPos = {};
+
+/* ===== Navegação ===== */
+function go(v, opts = {}) {
+  const screen = $("screen");
+  scrollPos[view] = screen.scrollTop;
+  view = v;
+  for (const s of document.querySelectorAll(".view")) s.hidden = s.dataset.view !== v;
+  for (const t of document.querySelectorAll("[data-tab]")) t.toggleAttribute("aria-current", t.dataset.tab === v), t.dataset.tab === v && t.setAttribute("aria-current", "page");
+  $("sendBar").hidden = !(v === "cart" && Object.keys(cart).length);
+  $("statusbar").classList.toggle("dark", v === "calc");
+  screen.scrollTop = opts.top ? 0 : (scrollPos[v] || 0);
+  if (v === "products") renderProducts();
+  if (v === "cart") renderCart();
+  if (opts.focus) setTimeout(() => $("q").focus(), 60);
+}
+
+/* ===== Carrinho ===== */
+function toast(msg) {
+  $("toastTxt").textContent = msg; $("toast").classList.add("on");
+  clearTimeout(toast.h); toast.h = setTimeout(() => $("toast").classList.remove("on"), 1700);
+}
+function setQty(id, q, silent) {
+  q = Math.max(0, Math.min(99999, Math.round(Number(q) || 0)));
+  const had = cart[id] || 0;
+  if (q) cart[id] = q; else delete cart[id];
+  save(); refreshCards(); updateBadge(q > had);
+  if (view === "cart") renderCart();
+  if (!silent && q > had) toast(`${byId[id].name} no orçamento`);
+}
+function addMany(list, label) {
+  for (const [id, q] of list) cart[id] = (cart[id] || 0) + q;
+  save(); refreshCards(); updateBadge(true); toast(`${label} no orçamento`);
+}
+function updateBadge(bump) {
+  const n = Object.keys(cart).length, b = $("badge");
+  b.hidden = !n; b.textContent = n;
+  if (bump) { b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
+  if (view === "cart") $("sendBar").hidden = !n;
+}
+function kitPrice(k) { const full = k.items.reduce((s, [id, q]) => s + byId[id].price * q, 0); return { full, kit: Math.round(full * (1 - k.off)) }; }
+function kitCredit() {
+  let credit = 0; const left = { ...cart };
+  for (const k of KITS) while (k.items.every(([id, q]) => (left[id] || 0) >= q)) {
+    const kp = kitPrice(k); credit += kp.full - kp.kit;
+    for (const [id, q] of k.items) left[id] -= q;
+  }
+  return credit;
+}
+function totals() {
+  const ids = Object.keys(cart).filter(id => byId[id]);
+  const gross = ids.reduce((s, id) => s + cart[id] * byId[id].price, 0);
+  const credit = kitCredit(), goods = gross - credit, z = ZONES.find(x => x.id === zoneId);
+  const ship = goods >= z.free ? 0 : z.fee;
+  return { ids, credit, goods, ship, z, card: goods + ship, pix: pix(goods) + ship };
+}
+
+/* ===== Componentes ===== */
+function mcard(p) {
+  const q = cart[p.id] || 0, off = offPct(p);
+  return `<div class="mc" data-pid="${p.id}" role="button" tabindex="0" aria-label="${p.name}">
+    <div class="im">${artOf(p)}${off ? `<span class="bd">−${off}%</span>` : p.rank <= 4 ? `<span class="bd top">Top</span>` : ""}
+      ${q ? `<div class="mq" data-id="${p.id}"><button type="button" data-d="-1" aria-label="Diminuir">−</button><span class="num">${q}</span><button type="button" data-d="1" aria-label="Aumentar">+</button></div>`
+          : `<button class="plus" type="button" data-add="${p.id}" aria-label="Adicionar ${p.name}">${PLUS}</button>`}
+    </div>
+    <div class="tx"><span class="u">${p.unit}</span><h3>${p.name}</h3>
+      <div class="pr">${p.was ? `<s class="num">${brl(pix(p.was))}</s>` : ""}<b class="num">${brl(pix(p.price))}</b><span>Pix</span></div></div>
+  </div>`;
+}
+function refreshCards() {
+  $("dealRail").innerHTML = PRODUCTS.filter(p => p.was).sort((a, b) => offPct(b) - offPct(a)).concat(PRODUCTS.filter(p => !p.was && p.rank <= 5)).map(mcard).join("");
+  $("topGrid").innerHTML = PRODUCTS.slice().sort((a, b) => a.rank - b.rank).slice(0, 6).map(mcard).join("");
+  if (view === "products") renderProducts();
+}
+
+/* ===== Início ===== */
+function renderHome() {
+  const d = byId[STORE.heroDealId];
+  const [r, c] = brl(pix(d.price)).split(",");
+  $("banners").innerHTML = `
+    <button class="banner b-deal" type="button" data-pid="${d.id}">
+      <span class="kick">Oferta da semana</span><span class="timer num" id="bTimer">--</span>
+      <h3>${d.name}</h3>
+      <div class="p"><s class="num">de ${brl(pix(d.was))}</s><b class="num">${r},<small style="font-size:.6em">${c}</small></b><span>no Pix</span></div>
+      <div class="art">${artOf(d)}</div>
+    </button>
+    <button class="banner b-kit" type="button" data-scroll="kitRail">
+      <span class="kick" style="color:#9aa1a8">Kits por etapa</span>
+      <h3>Reboco, piso e pintura num toque</h3>
+      <div class="p"><b>−10%</b><span style="color:#aeb4bb">até</span></div>
+      <div class="art" style="width:50%;bottom:4px">${artOf(byId["tinta-acrilica"])}</div>
+    </button>
+    <button class="banner b-ship" type="button" data-zone-open>
+      <span class="kick" style="color:var(--muted)">Frete grátis</span>
+      <h3>Acima de R$ 500 na Zona 1</h3>
+      <div class="p"><b style="color:var(--green)">4h</b><span style="color:var(--muted)">entrega média</span></div>
+      <svg class="truck" viewBox="0 0 160 90" aria-hidden="true"><ellipse cx="80" cy="82" rx="74" ry="5" fill="url(#g-floor)"/><rect x="8" y="22" width="92" height="48" rx="6" fill="#ffc21a"/><rect x="8" y="22" width="92" height="48" rx="6" fill="url(#g-v)"/><path d="M100 36h28l20 18v16h-48z" fill="#111315"/><path d="M106 41h18l12 12h-30z" fill="#9fb3c8"/><circle cx="34" cy="72" r="11" fill="#1d2024"/><circle cx="34" cy="72" r="4" fill="#aaa"/><circle cx="124" cy="72" r="11" fill="#1d2024"/><circle cx="124" cy="72" r="4" fill="#aaa"/><text x="54" y="51" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="13" fill="#111315">ALICERCE</text></svg>
+    </button>`;
+  $("cats").innerHTML = CATS.map((c, i) => `<button class="cat" type="button" data-cat="${i}"><span class="c">${artOf(byId[CAT_ART[i]])}</span><span>${c}</span></button>`).join("");
+  $("kitRail").innerHTML = KITS.map(k => {
+    const { full, kit } = kitPrice(k);
+    const pics = k.items.slice(0, 3).map(([id]) => `<div>${artOf(byId[id])}</div>`);
+    if (pics.length === 2) pics.unshift(`<div>${artOf(byId[k.items[1][0]])}</div>`);
+    return `<div class="kc"><span class="tag">Kit · ${k.tag}</span><span class="save">−${Math.round(k.off * 100)}%</span><h3>${k.name}</h3>
+      <div class="pics">${pics.join("")}</div>
+      <div class="items">${k.items.map(([id, q]) => `${q}× ${byId[id].name}`).join("<br>")}</div>
+      <div class="ft"><div><s class="num">${brl(pix(full))}</s><b class="num">${brl(pix(kit))}</b></div><button class="btn y sm" type="button" data-kit="${k.id}">Adicionar</button></div></div>`;
+  }).join("");
+  const bs = $("banners");
+  bs.addEventListener("scroll", () => {
+    const i = Math.round(bs.scrollLeft / (bs.firstElementChild.offsetWidth + 10));
+    [...$("dots").children].forEach((d, k) => d.classList.toggle("on", k === i));
+  }, { passive: true });
+}
+
+/* ===== Produtos ===== */
+function renderProducts() {
+  const counts = CATS.map((_, i) => PRODUCTS.filter(p => p.cat === i).length);
+  $("fchips").innerHTML = [[-1, "Todos"], ...CATS.map((c, i) => [i, c])].map(([i, c]) => `<button class="chip" type="button" data-c="${i}" aria-pressed="${activeCat === i}">${c}</button>`).join("");
+  const q = norm(query.trim());
+  const list = PRODUCTS.filter(p => (activeCat < 0 || p.cat === activeCat) && (!q || norm(`${p.name} ${p.spec} ${p.unit} ${CATS[p.cat]}`).includes(q)));
+  const S = { rel: (a, b) => a.rank - b.rank, asc: (a, b) => a.price - b.price, desc: (a, b) => b.price - a.price, off: (a, b) => offPct(b) - offPct(a) || a.rank - b.rank };
+  list.sort(S[sortBy]);
+  $("pcount").innerHTML = `<b>${list.length}</b> ${list.length === 1 ? "produto" : "produtos"}`;
+  $("pgrid").innerHTML = list.length ? list.map(mcard).join("")
+    : `<div class="empty"><b>Nada para “${esc(query.trim())}”</b><p>Temos mais de 3 mil itens na loja. Pergunte ao vendedor.</p><a class="btn wa sm" href="${waUrl(`Olá! Vocês têm ${query.trim()}?`)}" target="_blank" rel="noopener">Perguntar no WhatsApp</a></div>`;
+  $("qClear").hidden = !query;
+  void counts;
+}
+
+/* ===== Folha de produto ===== */
+function openSheet(el) {
+  $("scrim").hidden = false; el.hidden = false;
+  requestAnimationFrame(() => { $("scrim").classList.add("on"); el.classList.add("on"); });
+}
+function closeSheets() {
+  $("scrim").classList.remove("on");
+  for (const s of document.querySelectorAll(".sheet")) s.classList.remove("on");
+  setTimeout(() => { $("scrim").hidden = true; for (const s of document.querySelectorAll(".sheet")) s.hidden = true; }, 320);
+  sheetId = null;
+}
+function openProduct(id) {
+  const p = byId[id]; sheetId = id;
+  const off = offPct(p);
+  const inst = p.price >= 30000 ? `ou 10x de ${brl(Math.ceil(p.price / 10))} sem juros` : `${brl(p.price)} no cartão`;
+  $("pBody").innerHTML = `
+    <div class="pd-im">${artOf(p)}${off ? `<span class="bd">−${off}% esta semana</span>` : ""}</div>
+    <div class="pd-meta">${CATS[p.cat].toUpperCase()} · ${p.unit}</div>
+    <h2 class="pd-name">${p.name}</h2>
+    <p class="pd-spec">${p.spec}</p>
+    <div class="pd-price"><div>${p.was ? `<s class="num">de ${brl(pix(p.was))}</s>` : ""}<b class="num">${brl(pix(p.price))}</b><span class="g">no Pix</span></div><small class="num">${inst}</small></div>
+    <div class="pd-info">
+      <div><svg class="i" viewBox="0 0 24 24"><path d="M2 6h11v10H2zM13 10h4l4 4v2h-8z"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><span><b>${ZONES.find(z => z.id === zoneId).name}</b> · ${ZONES.find(z => z.id === zoneId).desc.split(" · ")[1] || "retirada hoje"}</span></div>
+      <div><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg><span>Sobrou? <b>Devolução em 30 dias</b></span></div>
+      <div><svg class="i" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg><span>Em estoque para entrega imediata</span></div>
+    </div>`;
+  $("pQtyIn").value = Math.max(1, cart[id] || 1);
+  updatePAdd();
+  $("pBody").scrollTop = 0;
+  openSheet($("pSheet"));
+}
+function updatePAdd() {
+  const p = byId[sheetId]; if (!p) return;
+  const q = Math.max(1, parseInt($("pQtyIn").value) || 1);
+  $("pAdd").innerHTML = `${cart[sheetId] ? "Atualizar" : "Adicionar"} · <span class="num">${brl(pix(p.price) * q)}</span>`;
+}
+
+/* ===== Zonas ===== */
+function renderZones() {
+  $("zList").innerHTML = `<h3>Onde é a obra?</h3>` + ZONES.map(z => `<button class="zopt" type="button" data-zone="${z.id}" aria-pressed="${z.id === zoneId}"><i style="background:${z.color}"></i><div><b>${z.name}</b><span>${z.desc}</span></div>
+    <div class="fee">${z.fee ? brl(z.fee) : "Grátis"}${z.free && z.free !== Infinity ? `<small>grátis acima de ${brl(z.free).replace(",00", "")}</small>` : ""}</div></button>`).join("");
+}
+function setZone(id) {
+  zoneId = id; save();
+  const z = ZONES.find(x => x.id === id);
+  $("zoneLabel").textContent = id ? `${z.name} · ${z.desc.split(" · ")[0].toLowerCase()}` : "Retirar na loja";
+  renderZones(); if (view === "cart") renderCart();
+}
+
+/* ===== Orçamento ===== */
+function renderCart() {
+  const t = totals();
+  $("clearCart").hidden = !t.ids.length;
+  if (!t.ids.length) {
+    $("cartBody").innerHTML = `<div class="cempty"><div class="art">${artOf(byId["carrinho"])}</div><b>Orçamento vazio</b><p>Adicione produtos, kits ou use a calculadora de obra.</p>
+      <div class="btns"><button class="btn sm" type="button" data-tab="products">Ver produtos</button><button class="btn sm y" type="button" data-tab="calc">Calcular obra</button></div></div>`;
+    $("sendBar").hidden = true;
+    return;
+  }
+  const missing = t.z.free === Infinity ? null : t.z.free - t.goods;
+  $("cartBody").innerHTML = `
+    <div class="lines">${t.ids.map(id => { const p = byId[id]; return `<div class="ln2"><div class="im">${artOf(p)}</div><div><div class="nm">${p.name}</div><div class="sub num">${brl(pix(p.price))} Pix / ${unitShort(p.unit)}</div></div>
+      <div class="r"><div class="qty" data-id="${id}"><button type="button" data-d="-1" aria-label="Diminuir">−</button><input type="number" value="${cart[id]}" min="0" inputmode="numeric" aria-label="Quantidade de ${p.name}"><button type="button" data-d="1" aria-label="Aumentar">+</button></div><span class="lt num">${brl(pix(cart[id] * p.price))}</span></div></div>`; }).join("")}</div>
+    <div class="card2">
+      ${t.z.id && missing !== null ? `<div class="ship">${missing > 0 ? `Faltam <b class="num">${brl(missing)}</b> para frete grátis` : `<b>Frete grátis</b> liberado`}<div class="bar"><i style="width:${Math.min(100, t.goods / t.z.free * 100)}%"></i></div></div>` : ""}
+      <button class="zonerow" type="button" data-zone-open><span><small>Entrega</small><b>${t.z.name} · ${t.z.desc}</b></span><svg class="i" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
+      <div style="margin-top:10px">
+        <div class="trow"><span>Produtos no cartão</span><span class="num">${brl(t.goods)}</span></div>
+        ${t.credit ? `<div class="trow"><span>Desconto de kit</span><span class="g num">−${brl(t.credit)}</span></div>` : ""}
+        <div class="trow"><span>Frete</span><span class="num">${t.ship ? brl(t.ship) : `<span class="g">Grátis</span>`}</span></div>
+        <div class="trow"><span>Total no cartão</span><span class="num">${brl(t.card)}</span></div>
+        <div class="trow big"><span>Total no Pix <span class="g">−5%</span></span><b class="num">${brl(t.pix)}</b></div>
+      </div>
+      <div class="inp2"><label for="cliName" hidden>Seu nome</label><input id="cliName" type="text" placeholder="Seu nome" autocomplete="name" value="${esc(saved.name || "")}"><label for="cliPlace" hidden>Bairro</label><input id="cliPlace" type="text" placeholder="Bairro da obra" value="${esc(saved.place || "")}"></div>
+    </div>
+    <div style="height:72px"></div>`;
+  $("sendBar").hidden = view !== "cart";
+  $("sendTotal").textContent = brl(t.pix);
+  updateWa(t);
+}
+function updateWa(t = totals()) {
+  const name = ($("cliName") || {}).value?.trim() || "", place = ($("cliPlace") || {}).value?.trim() || "";
+  saved.name = name; saved.place = place;
+  const lines = [`Olá, ${STORE.name}! Quero confirmar este orçamento:`, "",
+    ...t.ids.map(id => `• ${cart[id]}× ${byId[id].name} (${byId[id].unit})`), "",
+    t.credit ? `Desconto de kit: −${brl(t.credit)}` : null,
+    `Entrega: ${t.z.name}${t.ship ? ` (frete ${brl(t.ship)})` : " (frete grátis)"}`,
+    `Total no cartão: ${brl(t.card)}`, `Total no Pix: ${brl(t.pix)}`,
+    name ? `Nome: ${name}` : null, place ? `Bairro: ${place}` : null].filter(l => l !== null);
+  $("waLink").href = waUrl(lines.join("\n"));
+}
+
+/* ===== Calculadora ===== */
+const fmt = (n) => n.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+const CALC = {
+  parede: { fields: [["w", "Comprimento (m)", 6], ["h", "Altura (m)", 2.8], ["v", "Portas/janelas (m²)", 1.6], ["t", "Material", "tijolo-8f", [["tijolo-8f", "Tijolo 8 furos · 25 un/m²"], ["bloco-14", "Bloco de concreto · 12,5 un/m²"]]]],
+    run: (f) => { const area = Math.max(0, f.w * f.h - f.v), rate = f.t === "bloco-14" ? 12.5 : 25;
+      return { items: [[f.t, Math.ceil(area * rate * 1.1)], ["cimento-cp2", Math.ceil(area * .05)], ["cal-ch3", Math.ceil(area * .09)], ["areia-media", Math.max(1, Math.ceil(area * .015))]], note: `${fmt(area)} m² de parede · 10% de perda · assentamento 1:2:8` }; } },
+  contrapiso: { fields: [["a", "Área (m²)", 15], ["e", "Espessura (cm)", 5]],
+    run: (f) => { const vol = f.a * f.e / 100; return { items: [["cimento-cp2", Math.ceil(vol * 7)], ["areia-media", Math.max(1, Math.ceil(vol * 1.15))]], note: `${fmt(vol)} m³ de argamassa · traço 1:4` }; } },
+  pintura: { fields: [["a", "Área (m²)", 120], ["d", "Demãos", 2]],
+    run: (f) => ({ items: [["tinta-acrilica", Math.ceil(f.a * f.d / 250)], ["massa-corrida", Math.ceil(f.a / 60)], ["rolo-la", 1]], note: `Rendimento médio de 250 m² por demão` }) },
+  piso: { fields: [["a", "Área (m²)", 20], ["t", "Revestimento", "piso-ceramico", [["piso-ceramico", "Cerâmico 60 × 60"], ["porcelanato", "Porcelanato 80 × 80"]]]],
+    run: (f) => ({ items: [[f.t, Math.ceil(f.a * 1.1)], [f.t === "porcelanato" ? "argamassa-ac3" : "argamassa-ac1", Math.ceil(f.a / 4)], ["rejunte", Math.ceil(f.a / 5)]], note: `10% de perda · argamassa 5 kg/m² com dupla colagem` }) }
+};
+function renderFields() {
+  $("cfields").innerHTML = CALC[ctab].fields.map(([k, label, def, opts]) => {
+    const id = `c-${ctab}-${k}`;
+    return opts
+      ? `<div class="cf full"><label for="${id}">${label}</label><select id="${id}" data-k="${k}">${opts.map(([v, l]) => `<option value="${v}"${v === def ? " selected" : ""}>${l}</option>`).join("")}</select></div>`
+      : `<div class="cf"><label for="${id}">${label}</label><input id="${id}" data-k="${k}" type="number" min="0" step="0.1" value="${def}" inputmode="decimal"></div>`;
+  }).join("");
+  runCalc();
+}
+function runCalc() {
+  const f = {};
+  for (const el of $("cfields").querySelectorAll("[data-k]")) f[el.dataset.k] = el.tagName === "SELECT" ? el.value : Math.max(0, parseFloat(el.value) || 0);
+  lastCalc = CALC[ctab].run(f); lastCalc.items = lastCalc.items.filter(([, q]) => q > 0);
+  const total = lastCalc.items.reduce((s, [id, q]) => s + byId[id].price * q, 0);
+  $("cout").innerHTML = lastCalc.items.map(([id, q]) => { const p = byId[id]; return `<div class="ln"><span class="nm"><i>${artOf(p)}</i>${p.name}</span><b class="num">${q.toLocaleString("pt-BR")}<small>${unitShort(p.unit)}</small></b></div>`; }).join("")
+    || `<div class="ln"><span class="nm">Informe as medidas</span><b>—</b></div>`;
+  $("ctotal").textContent = brl(pix(total));
+  $("cnote").textContent = lastCalc.note;
+}
+
+/* ===== Contagem ===== */
+function deadline() { const now = new Date(), d = new Date(now); d.setHours(13, 0, 0, 0); d.setDate(d.getDate() + ((6 - d.getDay() + 7) % 7)); if (d <= now) d.setDate(d.getDate() + 7); return d; }
+const DL = deadline();
+function tick() {
+  let s = Math.max(0, Math.floor((DL - new Date()) / 1000));
+  const d = Math.floor(s / 86400); s %= 86400; const h = Math.floor(s / 3600); s %= 3600; const m = Math.floor(s / 60); s %= 60;
+  const p2 = (n) => String(n).padStart(2, "0");
+  const txt = `${d ? d + "d " : ""}${p2(h)}:${p2(m)}:${p2(s)}`;
+  $("cd").textContent = txt; const bt = $("bTimer"); if (bt) bt.textContent = txt;
+  const now = new Date(); $("clock").textContent = `${now.getHours()}:${p2(now.getMinutes())}`;
+}
+
+/* ===== Eventos ===== */
+document.addEventListener("click", (e) => {
+  const t = e.target;
+  if (t.closest("[data-close]") || t === $("scrim")) { closeSheets(); return; }
+  const add = t.closest("[data-add]"); if (add) { e.stopPropagation(); setQty(add.dataset.add, 1); return; }
+  const mqb = t.closest(".mq button"); if (mqb) { const id = mqb.parentElement.dataset.id; setQty(id, (cart[id] || 0) + Number(mqb.dataset.d), true); return; }
+  const qb = t.closest(".qty[data-id] button"); if (qb) { const id = qb.parentElement.dataset.id; setQty(id, (cart[id] || 0) + Number(qb.dataset.d), true); return; }
+  const pd = t.closest("[data-pd]"); if (pd) { $("pQtyIn").value = Math.max(1, (parseInt($("pQtyIn").value) || 1) + Number(pd.dataset.pd)); updatePAdd(); return; }
+  const kit = t.closest("[data-kit]"); if (kit) { const k = KITS.find(x => x.id === kit.dataset.kit); addMany(k.items, `Kit ${k.name}`); return; }
+  const zo = t.closest("[data-zone]"); if (zo) { setZone(Number(zo.dataset.zone)); setTimeout(closeSheets, 180); return; }
+  if (t.closest("[data-zone-open]")) { renderZones(); openSheet($("zSheet")); return; }
+  const card = t.closest("[data-pid]"); if (card) { openProduct(card.dataset.pid); return; }
+  const tab = t.closest("[data-tab]"); if (tab) { go(tab.dataset.tab, { top: tab.dataset.tab === view }); return; }
+  if (t.closest("[data-go-search]")) { activeCat = -1; go("products", { top: true, focus: true }); return; }
+  const cat = t.closest("[data-cat]"); if (cat) { activeCat = Number(cat.dataset.cat); query = ""; $("q").value = ""; go("products", { top: true }); return; }
+  const c = t.closest("[data-c]"); if (c) { activeCat = Number(c.dataset.c); renderProducts(); return; }
+  const sc = t.closest("[data-scroll]"); if (sc) { $(sc.dataset.scroll).scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeSheets();
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches(".mc[data-pid]")) { e.preventDefault(); openProduct(e.target.dataset.pid); }
+});
+document.addEventListener("change", (e) => {
+  const box = e.target.closest(".qty[data-id]");
+  if (box && e.target.tagName === "INPUT") setQty(box.dataset.id, e.target.value, true);
+});
+document.addEventListener("input", (e) => {
+  if (e.target.id === "cliName" || e.target.id === "cliPlace") { updateWa(); save(); }
+});
+$("pQtyIn").addEventListener("input", updatePAdd);
+$("pAdd").addEventListener("click", () => {
+  const q = Math.max(1, parseInt($("pQtyIn").value) || 1), had = cart[sheetId];
+  setQty(sheetId, q, true); toast(had ? "Quantidade atualizada" : `${byId[sheetId].name} no orçamento`); closeSheets();
+});
+$("q").addEventListener("input", (e) => { query = e.target.value; renderProducts(); });
+$("qClear").addEventListener("click", () => { query = ""; $("q").value = ""; renderProducts(); $("q").focus(); });
+$("sort").addEventListener("change", (e) => { sortBy = e.target.value; renderProducts(); });
+$("cseg").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-t]"); if (!b) return;
+  ctab = b.dataset.t; for (const x of $("cseg").children) x.setAttribute("aria-selected", String(x === b)); renderFields();
+});
+$("calcForm").addEventListener("input", runCalc);
+$("calcForm").addEventListener("submit", (e) => { e.preventDefault(); runCalc(); if (lastCalc.items.length) addMany(lastCalc.items, "Cálculo"); });
+$("clearCart").addEventListener("click", () => { cart = {}; save(); refreshCards(); updateBadge(); renderCart(); });
+
+/* Ajusta a moldura à altura da janela no modo apresentação */
+function fit() {
+  const f = $("frame");
+  if (!matchMedia("(min-width: 640px) and (min-height: 560px)").matches) { f.style.transform = ""; f.style.height = ""; return; }
+  const s = Math.min(1, (innerHeight - 90) / 868);
+  f.style.transform = `scale(${s})`; f.style.height = `${844 * s}px`; f.style.marginBottom = `${-844 * (1 - s) * 0}px`;
+}
+addEventListener("resize", fit);
+
+/* ===== Init ===== */
+document.title = `${STORE.name} Mobile`;
+$("capName").textContent = STORE.name;
+$("proWa").href = waUrl(`Olá, ${STORE.name}! Quero fazer o cadastro profissional.`);
+renderHome(); refreshCards(); renderFields(); setZone(zoneId); updateBadge(); fit();
+tick(); setInterval(tick, 1000);
+</script>
+
+</body>
+</html>
