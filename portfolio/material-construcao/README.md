@@ -4,6 +4,7 @@ Página estática, sem build e sem dependências (só Google Fonts). Abra `index
 
 - `catalogo.html`: fonte da página (sem `<html>/<head>`), usada na publicação como Artifact.
 - `index.html`: mesma página embrulhada em documento completo, pronta para hospedar.
+- `mobile.html`: versão app para celular (abas, ficha do produto, orçamento). No computador aparece dentro de uma moldura de celular, para apresentação.
 
 ## Personalizar para uma loja
 
