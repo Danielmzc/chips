@@ -1,4 +1,5 @@
 {
+  "enabledPlugins": {},
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
       "source": {
@@ -6,8 +7,5 @@
         "repo": "anthropics/claude-plugins-official"
       }
     }
-  },
-  "enabledPlugins": {
-    "hostinger@claude-plugins-official": true
   }
 }
